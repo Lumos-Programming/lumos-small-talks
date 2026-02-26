@@ -38,7 +38,14 @@ export function LTCard({ talk, onEdit, onDelete, isOwner }: LTCardProps) {
         </div>
       )}
       <div className="px-6 pb-4 text-[10px] text-muted-foreground text-right">
-        登録: {format(talk.createdAt.toDate(), 'yyyy-MM-dd HH:mm')}
+        登録: {format(
+          talk.createdAt instanceof Date
+            ? talk.createdAt
+            : typeof talk.createdAt === 'object' && 'seconds' in talk.createdAt
+            ? new Date(talk.createdAt.seconds * 1000)
+            : new Date(),
+          'yyyy-MM-dd HH:mm'
+        )}
       </div>
     </Card>
   )
