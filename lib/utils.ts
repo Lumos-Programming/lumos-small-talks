@@ -1,4 +1,4 @@
-import { formatISOWeek, startOfISOWeek, addWeeks, subWeeks } from 'date-fns';
+import { format, addWeeks } from 'date-fns';
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 
@@ -8,7 +8,7 @@ export function cn(...inputs: ClassValue[]) {
 
 export function getWeekId(date: Date = new Date()): string {
   // ISOWeek format: 2026-W09
-  return formatISOWeek(date);
+  return format(date, "RRRR-'W'II");
 }
 
 export function getRelativeWeekId(offset: number): string {
