@@ -1,43 +1,78 @@
-import { auth, signIn, signOut } from '@/lib/auth'
-import { getWeekData, addTalk, updateTalk, deleteTalk } from '@/lib/firebase'
-import { getWeekId } from '@/lib/utils'
-import { WeekNavigator } from '@/components/WeekNavigator'
-import { ManageTalks } from '@/components/ManageTalks'
-import { Button, Badge } from '@/components/ui'
-import { revalidatePath } from 'next/cache'
+import {auth, signIn, signOut} from '@/lib/auth'
+import {getWeekData, addTalk, updateTalk, deleteTalk} from '@/lib/firebase'
+import {getWeekId} from '@/lib/utils'
+import {WeekNavigator} from '@/components/WeekNavigator'
+import {ManageTalks} from '@/components/ManageTalks'
+import {Header} from '@/components/Header'
+import {Button, Badge} from '@/components/ui'
+import {revalidatePath} from 'next/cache'
 import Link from 'next/link'
 
-export default async function SubmitPage({ searchParams }: { searchParams: Promise<{ week?: string }> }) {
+export default async function SubmitPage({searchParams}: { searchParams: Promise<{ week?: string }> }) {
   const session = await auth()
   const params = await searchParams
   const weekId = params.week || getWeekId()
 
   if (!session) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
-        <h1 className="text-2xl font-bold">発表登録にはログインが必要です</h1>
-        <form action={async () => { "use server"; await signIn("discord") }}>
-          <Button size="lg">Discordでログイン</Button>
-        </form>
-      </div>
+      <main
+        className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 flex items-center justify-center p-4">
+        <div className="bg-white rounded-3xl shadow-2xl p-12 max-w-md w-full text-center">
+          <div className="mb-8">
+            <div className="w-20 h-20 bg-gradient-primary rounded-2xl mx-auto mb-4 flex items-center justify-center">
+              <span className="text-4xl">🔐</span>
+            </div>
+            <h1 className="text-3xl font-bold mb-3">発表登録</h1>
+            <p className="text-muted-foreground">
+              発表を登録・管理するには<br/>ログインが必要です
+            </p>
+          </div>
+          <form action={async () => {
+            "use server";
+            await signIn("discord")
+          }}>
+            <Button
+              size="lg"
+              className="w-full bg-[#5865F2] hover:bg-[#4752C4] text-white py-6 text-lg font-semibold"
+            >
+              <span className="mr-2">💬</span>
+              Discordでログイン
+            </Button>
+          </form>
+          <div className="mt-8 pt-6 border-t">
+            <Link href="/" className="text-sm text-muted-foreground hover:text-purple-600 transition-colors">
+              ← 公開ページへ戻る
+            </Link>
+          </div>
+        </div>
+      </main>
     )
   }
 
   const data = await getWeekData(weekId)
   const myTalks = data.talks.filter(t => t.presenterUid === session.user?.id)
 
-  const handleAction = async (formData: any) => {
+  const handleAction = async (formData: { title: string; description: string; id?: string }) => {
     "use server"
     const userId = session.user?.id as string
     const userName = session.user?.name as string
     const userAvatar = session.user?.image as string
 
     if (formData.id) {
+      // 編集の場合はそのまま更新
       await updateTalk(weekId, formData.id, {
         title: formData.title,
         description: formData.description,
       }, userId)
     } else {
+      // 新規登録の場合、既に発表があるかチェック
+      const currentData = await getWeekData(weekId)
+      const existingTalks = currentData.talks.filter(t => t.presenterUid === userId)
+
+      if (existingTalks.length >= 1) {
+        throw new Error('この週には既に発表を登録済みです。週に1件まで登録できます。')
+      }
+
       await addTalk(weekId, {
         title: formData.title,
         description: formData.description,
@@ -58,30 +93,56 @@ export default async function SubmitPage({ searchParams }: { searchParams: Promi
   }
 
   return (
-    <main className="container mx-auto px-4 py-8 max-w-4xl">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">発表の管理</h1>
-        <div className="flex items-center space-x-4">
-          <Badge>{session.user?.name}</Badge>
-          <form action={async () => { "use server"; await signOut() }}>
-            <Button variant="ghost" size="sm">ログアウト</Button>
-          </form>
+    <main className="min-h-screen">
+      <Header/>
+
+      <div className="bg-gradient-to-br from-purple-50 via-white to-blue-50 min-h-screen">
+        <div className="container mx-auto px-4 py-8 max-w-4xl">
+          <div className="bg-white rounded-2xl shadow-xl p-6 mb-8">
+            <div className="flex justify-between items-center">
+              <div>
+                <h1 className="text-3xl font-bold text-black bg-clip-text text-transparent">
+                  📝 発表エントリーページ
+                </h1>
+                <p className="text-sm text-muted-foreground mt-1">
+                  あなたの発表を登録・編集できます
+                </p>
+              </div>
+              <div className="flex items-center gap-4">
+                <Badge className="bg-gradient-primary text-white px-4 py-2">
+                  👤 {session.user?.name}
+                </Badge>
+                <form action={async () => {
+                  "use server";
+                  await signOut()
+                }}>
+                  <Button variant="outline" size="sm" className="hover:bg-red-50 hover:border-red-300">
+                    🚪 ログアウト
+                  </Button>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-2xl shadow-xl p-6 mb-8">
+            <WeekNavigator currentWeek={weekId} baseUrl="/submit"/>
+          </div>
+
+          <ManageTalks
+            weekId={weekId}
+            myTalks={JSON.parse(JSON.stringify(myTalks))}
+            onAction={handleAction}
+            onDelete={handleDelete}
+          />
+
+          <div className="mt-12 text-center pb-8">
+            <Link href="/">
+              <Button variant="outline" className="hover:bg-purple-50 hover:border-purple-300">
+                ← 公開ページへ戻る
+              </Button>
+            </Link>
+          </div>
         </div>
-      </div>
-
-      <WeekNavigator currentWeek={weekId} baseUrl="/submit" />
-
-      <ManageTalks 
-        weekId={weekId} 
-        myTalks={JSON.parse(JSON.stringify(myTalks))} 
-        onAction={handleAction} 
-        onDelete={handleDelete} 
-      />
-      
-      <div className="mt-8 text-center">
-        <Link href="/" className="text-sm text-muted-foreground hover:underline">
-          ← 公開ページへ戻る
-        </Link>
       </div>
     </main>
   )

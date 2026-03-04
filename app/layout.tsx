@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "LTプログラム管理",
-  description: "毎週月曜日のLT発表を管理するアプリケーション",
+  title: "Mini LT プロジェクト - Lumos",
+  description: "Lumosが運営する毎週月曜日のLT発表プログラム",
 };
 
 export default function RootLayout({

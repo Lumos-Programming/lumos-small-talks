@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterAll, vi } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import * as firebaseAdmin from 'firebase-admin';
 import { getWeekData, addTalk, updateTalk, deleteTalk } from './firebase';
 

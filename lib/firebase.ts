@@ -49,7 +49,7 @@ export async function getWeekData(weekId: string): Promise<WeekData> {
 
 export async function addTalk(
   weekId: string,
-  talkData: Omit<Talk, 'id' | 'createdAt' | 'order'>,
+  talkData: Omit<Talk, 'id' | 'createdAt' | 'order' | 'presenterUid'>,
   userId: string
 ): Promise<void> {
   const weekRef = db.collection('weeks').doc(weekId);
@@ -59,6 +59,12 @@ export async function addTalk(
     let talks: Talk[] = [];
     if (doc.exists) {
       talks = (doc.data() as WeekData).talks || [];
+    }
+
+    // Check if user already has a talk registered for this week
+    const existingTalk = talks.find(t => t.presenterUid === userId);
+    if (existingTalk) {
+      throw new Error('週に1件まで発表を登録できます');
     }
 
     const newTalk: Talk = {
