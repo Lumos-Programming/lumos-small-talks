@@ -8,6 +8,8 @@ import {Button, Badge} from '@/components/ui'
 import {revalidatePath} from 'next/cache'
 import Link from 'next/link'
 
+export const dynamic = 'force-dynamic'
+
 export default async function SubmitPage({searchParams}: { searchParams: Promise<{ week?: string }> }) {
   const session = await auth()
   const params = await searchParams

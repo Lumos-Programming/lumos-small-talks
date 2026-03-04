@@ -6,6 +6,8 @@ import {Header} from '@/components/Header'
 import {Badge} from '@/components/ui'
 import Link from 'next/link'
 
+export const dynamic = 'force-dynamic'
+
 export default async function HomePage({searchParams}: { searchParams: Promise<{ week?: string }> }) {
   const params = await searchParams
   const weekId = params.week || getWeekId()
