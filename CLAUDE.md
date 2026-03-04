@@ -71,6 +71,11 @@ All CRUD operations use **Firestore transactions** to prevent race conditions:
 
 **Important**: All mutations verify `presenterUid === userId` to enforce ownership.
 
+**Firebase Initialization**:
+- **Emulator mode**: Uses `FIRESTORE_EMULATOR_HOST` (for tests)
+- **Local development**: Uses service account key (`FIREBASE_PRIVATE_KEY` + `FIREBASE_CLIENT_EMAIL`)
+- **Cloud Run/GCE**: Uses Application Default Credentials (ADC) automatically when private key is not provided
+
 ### Authentication Flow (lib/auth.ts)
 
 NextAuth is configured with Discord provider and custom callbacks:
@@ -83,7 +88,8 @@ NextAuth is configured with Discord provider and custom callbacks:
 Environment variables required:
 - `AUTH_SECRET`, `AUTH_DISCORD_ID`, `AUTH_DISCORD_SECRET`
 - `DISCORD_GUILD_ID` (optional, bypasses guild check if not set)
-- `FIREBASE_PROJECT_ID`, `FIREBASE_CLIENT_EMAIL`, `FIREBASE_PRIVATE_KEY`
+- `FIREBASE_PROJECT_ID` (always required)
+- `FIREBASE_CLIENT_EMAIL`, `FIREBASE_PRIVATE_KEY` (only for local development; omit on Cloud Run to use ADC)
 
 ### Page Structure
 

@@ -4,16 +4,24 @@ import * as admin from 'firebase-admin';
 function initializeFirebase() {
   if (!admin.apps.length) {
     if (process.env.FIRESTORE_EMULATOR_HOST) {
+      // Emulator mode (for tests)
       admin.initializeApp({
         projectId: process.env.FIREBASE_PROJECT_ID || 'test-project',
       });
-    } else if (process.env.FIREBASE_PROJECT_ID) {
+    } else if (process.env.FIREBASE_PRIVATE_KEY && process.env.FIREBASE_CLIENT_EMAIL) {
+      // Local development with service account key
       admin.initializeApp({
         credential: admin.credential.cert({
           projectId: process.env.FIREBASE_PROJECT_ID,
           clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-          privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+          privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
         }),
+      });
+    } else if (process.env.FIREBASE_PROJECT_ID) {
+      // Cloud Run or GCE: Use Application Default Credentials
+      admin.initializeApp({
+        credential: admin.credential.applicationDefault(),
+        projectId: process.env.FIREBASE_PROJECT_ID,
       });
     }
   }

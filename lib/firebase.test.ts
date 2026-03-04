@@ -2,6 +2,13 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import * as firebaseAdmin from 'firebase-admin';
 import { getWeekData, addTalk, updateTalk, deleteTalk } from './firebase';
 
+// Initialize Firebase for tests
+if (!firebaseAdmin.apps.length) {
+  firebaseAdmin.initializeApp({
+    projectId: process.env.FIREBASE_PROJECT_ID || 'test-project',
+  });
+}
+
 describe('Firebase CRUD Logic', () => {
   const weekId = '2026-W09';
   const userId = 'user-123';
