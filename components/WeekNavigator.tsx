@@ -1,6 +1,6 @@
 import { Button } from './ui'
 import Link from 'next/link'
-import { getRelativeWeekId, formatWeekDate } from '@/lib/utils'
+import { getNavigationWeeks, formatWeekDate } from '@/lib/utils'
 
 interface WeekNavigatorProps {
   currentWeek: string
@@ -8,28 +8,8 @@ interface WeekNavigatorProps {
 }
 
 export function WeekNavigator({ currentWeek, baseUrl }: WeekNavigatorProps) {
-  // イベント開催中かチェック（月曜21:00〜22:00の間）
-  const now = new Date()
-  const isMonday = now.getDay() === 1
-  const hour = now.getHours()
-  const isDuringEvent = isMonday && hour >= 21
-
-  // イベント基準の週を計算
-  // イベント開催中（月曜21:00〜24:00）: 前回=先週、今回=今週、次回=来週
-  // イベント前（火曜〜次の月曜21:00前）: 前回=先週、次回=今週、次々回=来週
-  let prevWeek, centerWeek, nextWeek
-
-  if (isDuringEvent) {
-    // イベント開催中
-    prevWeek = getRelativeWeekId(-1) // 先週
-    centerWeek = getRelativeWeekId(0) // 今週
-    nextWeek = getRelativeWeekId(1) // 来週
-  } else {
-    // 火曜〜次の月曜21:00前
-    prevWeek = getRelativeWeekId(0) // 今週
-    centerWeek = getRelativeWeekId(1) // 来週
-    nextWeek = getRelativeWeekId(2) // 再来週
-  }
+  // Get navigation weeks and labels
+  const { prevWeek, centerWeek, nextWeek, centerLabel, rightLabel } = getNavigationWeeks()
 
   const prevDate = formatWeekDate(prevWeek)
   const centerDate = formatWeekDate(centerWeek)
@@ -59,7 +39,7 @@ export function WeekNavigator({ currentWeek, baseUrl }: WeekNavigatorProps) {
               : 'hover:bg-purple-50 px-6 flex flex-col py-2 h-auto'
           }
         >
-          <span className="text-sm">{isDuringEvent ? '📅 今回' : '📅 次回'}</span>
+          <span className="text-sm">📅 {centerLabel}</span>
           <span className="text-xs font-normal opacity-70">{centerDate}</span>
         </Button>
       </Link>
@@ -72,7 +52,7 @@ export function WeekNavigator({ currentWeek, baseUrl }: WeekNavigatorProps) {
               : 'hover:bg-purple-50 flex flex-col items-end py-2 h-auto'
           }
         >
-          <span className="text-xs">{isDuringEvent ? '次回' : '次々回'} →</span>
+          <span className="text-xs">{rightLabel} →</span>
           <span className="text-xs font-normal opacity-70">{nextDate}</span>
         </Button>
       </Link>

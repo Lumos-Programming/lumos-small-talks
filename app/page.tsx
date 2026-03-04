@@ -1,5 +1,5 @@
 import { getWeekData } from '@/lib/firebase'
-import { getNextEventWeekId, getRelativeWeekId, formatWeekDate } from '@/lib/utils'
+import { getNextEventWeekId, formatWeekDate, getWeekLabel } from '@/lib/utils'
 import { LTCard } from '@/components/LTCard'
 import { WeekNavigator } from '@/components/WeekNavigator'
 import { Header } from '@/components/Header'
@@ -19,29 +19,8 @@ export default async function HomePage({
   const data = await getWeekData(weekId)
   const nextEventDate = formatWeekDate(nextEventWeekId)
 
-  // 選択中の週が「次回」「前回」「次々回」のどれか判定
-  const now = new Date()
-  const isMonday = now.getDay() === 1
-  const hour = now.getHours()
-  const isDuringEvent = isMonday && hour >= 21
-
-  let prevWeekId, centerWeekId, nextWeekId
-  if (isDuringEvent) {
-    // イベント開催中
-    prevWeekId = getRelativeWeekId(-1) // 先週
-    centerWeekId = getRelativeWeekId(0) // 今週
-    nextWeekId = getRelativeWeekId(1) // 来週
-  } else {
-    // 火曜〜次の月曜21:00前
-    prevWeekId = getRelativeWeekId(0) // 今週
-    centerWeekId = getRelativeWeekId(1) // 来週
-    nextWeekId = getRelativeWeekId(2) // 再来週
-  }
-
-  let weekLabel = '今週'
-  if (weekId === prevWeekId) weekLabel = '前回'
-  else if (weekId === centerWeekId) weekLabel = isDuringEvent ? '今回' : '次回'
-  else if (weekId === nextWeekId) weekLabel = isDuringEvent ? '次回' : '次々回'
+  // Get label for the current week
+  const weekLabel = getWeekLabel(weekId)
 
   return (
     <main className="min-h-screen">
