@@ -61,6 +61,12 @@ export async function addTalk(
       talks = (doc.data() as WeekData).talks || [];
     }
 
+    // Check if user already has a talk registered for this week
+    const existingTalk = talks.find(t => t.presenterUid === userId);
+    if (existingTalk) {
+      throw new Error('週に1件まで発表を登録できます');
+    }
+
     const newTalk: Talk = {
       ...talkData,
       id: crypto.randomUUID(),
