@@ -33,3 +33,85 @@ export function formatWeekDate(weekId: string): string {
     return weekId
   }
 }
+
+// Event configuration type
+export type EventConfig = {
+  dayOfWeek: number // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+  startHour: number // 0-23
+  endHour: number // 1-24 (exclusive)
+}
+
+// Event configuration - easy to modify when event schedule changes
+export const EVENT_CONFIG: EventConfig = {
+  dayOfWeek: 1, // Monday
+  startHour: 21, // 21:00
+  endHour: 24, // 24:00 (midnight, exclusive)
+}
+
+// Check if currently during event time
+export function isDuringEvent(now: Date = new Date(), config: EventConfig = EVENT_CONFIG): boolean {
+  const dayOfWeek = now.getDay()
+  const hour = now.getHours()
+  return dayOfWeek === config.dayOfWeek && hour >= config.startHour && hour < config.endHour
+}
+
+// Get week IDs for navigation (prev, center, next)
+export function getNavigationWeeks(
+  now: Date = new Date(),
+  config: EventConfig = EVENT_CONFIG
+): {
+  prevWeek: string
+  centerWeek: string
+  nextWeek: string
+  centerLabel: '今回' | '次回'
+  rightLabel: '次回' | '次々回'
+} {
+  const duringEvent = isDuringEvent(now, config)
+
+  if (duringEvent) {
+    // During event: prev=last week, center=this week (ongoing), next=next week
+    return {
+      prevWeek: getRelativeWeekId(-1),
+      centerWeek: getRelativeWeekId(0),
+      nextWeek: getRelativeWeekId(1),
+      centerLabel: '今回',
+      rightLabel: '次回',
+    }
+  } else {
+    // Not during event: prev=this week (finished), center=next week, next=week after
+    return {
+      prevWeek: getRelativeWeekId(0),
+      centerWeek: getRelativeWeekId(1),
+      nextWeek: getRelativeWeekId(2),
+      centerLabel: '次回',
+      rightLabel: '次々回',
+    }
+  }
+}
+
+// Get the next event week ID
+export function getNextEventWeekId(
+  now: Date = new Date(),
+  config: EventConfig = EVENT_CONFIG
+): string {
+  const duringEvent = isDuringEvent(now, config)
+  // During event: this week, otherwise: next week
+  return duringEvent ? getWeekId(now) : getRelativeWeekId(1)
+}
+
+// Get label for a specific week ID
+export function getWeekLabel(
+  weekId: string,
+  now: Date = new Date(),
+  config: EventConfig = EVENT_CONFIG
+): '前回' | '今回' | '次回' | '次々回' | '今週' {
+  const { prevWeek, centerWeek, nextWeek, centerLabel, rightLabel } = getNavigationWeeks(
+    now,
+    config
+  )
+
+  if (weekId === prevWeek) return '前回'
+  if (weekId === centerWeek) return centerLabel
+  if (weekId === nextWeek) return rightLabel
+  return '今週'
+}

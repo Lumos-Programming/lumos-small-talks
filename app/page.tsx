@@ -1,5 +1,5 @@
 import { getWeekData } from '@/lib/firebase'
-import { getWeekId, formatWeekDate } from '@/lib/utils'
+import { getNextEventWeekId, formatWeekDate, getWeekLabel } from '@/lib/utils'
 import { LTCard } from '@/components/LTCard'
 import { WeekNavigator } from '@/components/WeekNavigator'
 import { Header } from '@/components/Header'
@@ -14,9 +14,13 @@ export default async function HomePage({
   searchParams: Promise<{ week?: string }>
 }) {
   const params = await searchParams
-  const weekId = params.week || getWeekId()
+  const nextEventWeekId = getNextEventWeekId()
+  const weekId = params.week || nextEventWeekId
   const data = await getWeekData(weekId)
-  const weekDate = formatWeekDate(weekId)
+  const nextEventDate = formatWeekDate(nextEventWeekId)
+
+  // Get label for the current week
+  const weekLabel = getWeekLabel(weekId)
 
   return (
     <main className="min-h-screen">
@@ -27,7 +31,7 @@ export default async function HomePage({
         <div className="container mx-auto px-4 max-w-5xl">
           <div className="flex flex-wrap items-center justify-center gap-2">
             <span className="text-xl font-bold bg-white/20 backdrop-blur-sm px-5 py-2 rounded-xl text-white">
-              📅 次回の予定: {weekDate} 21:00〜
+              📅 次回の予定: {nextEventDate} 21:00〜
             </span>
           </div>
         </div>
@@ -88,7 +92,7 @@ export default async function HomePage({
           <div className="text-center py-12 bg-white rounded-2xl border-2 border-dashed border-gray-200">
             <div className="text-5xl mb-3">🌱</div>
             <p className="text-lg font-semibold text-gray-700 mb-1">
-              今週はまだ誰も登録していません
+              {weekLabel}はまだ誰も登録していません
             </p>
             <p className="text-sm text-muted-foreground">あなたが最初の一人になりませんか？</p>
           </div>
