@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { Button, Input, Textarea, Card, CardHeader, CardTitle, CardContent } from './ui'
-import { Talk } from '@/lib/firebase'
+import {useState, useEffect} from 'react'
+import {Button, Input, Textarea, Card, CardHeader, CardTitle, CardContent} from './ui'
+import {Talk} from '@/lib/firebase'
 
 interface SubmitFormProps {
   weekId: string;
@@ -11,7 +11,7 @@ interface SubmitFormProps {
   onCancelEdit?: () => void;
 }
 
-export function SubmitForm({ weekId, onSubmit, editingTalk, onCancelEdit }: SubmitFormProps) {
+export function SubmitForm({weekId, onSubmit, editingTalk, onCancelEdit}: SubmitFormProps) {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [loading, setLoading] = useState(false)
@@ -33,7 +33,7 @@ export function SubmitForm({ weekId, onSubmit, editingTalk, onCancelEdit }: Subm
     setLoading(true)
     setError(null)
     try {
-      await onSubmit({ title, description, id: editingTalk?.id })
+      await onSubmit({title, description, id: editingTalk?.id})
       if (!editingTalk) {
         setTitle('')
         setDescription('')
@@ -80,7 +80,16 @@ export function SubmitForm({ weekId, onSubmit, editingTalk, onCancelEdit }: Subm
           <div className="space-y-2">
             <label className="text-sm font-semibold flex items-center gap-2">
               <span className="text-purple-600">📄</span>
-              概要（Markdown対応）
+              概要（Markdown使えます!!）
+              <a
+                href="https://qiita.com/kamorits/items/6f342da395ad57468ae3"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-700 hover:bg-purple-200 transition-colors"
+              >
+                <span>🔰</span>
+                <span>書き方</span>
+              </a>
             </label>
             <Textarea
               value={description}
@@ -91,7 +100,16 @@ export function SubmitForm({ weekId, onSubmit, editingTalk, onCancelEdit }: Subm
               className="border-2 focus:border-purple-300"
             />
             <p className="text-xs text-muted-foreground">
-              💡 Markdownで箇条書きや見出しが使えます
+              💡 Markdownで箇条書きや見出しが使えます（
+              <a
+                href="https://qiita.com/kamorits/items/6f342da395ad57468ae3"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-purple-600 hover:underline"
+              >
+                使い方
+              </a>
+              ）
             </p>
           </div>
           <div className="flex gap-3">
