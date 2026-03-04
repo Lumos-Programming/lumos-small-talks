@@ -11,7 +11,7 @@ export function Header() {
             <div className="flex items-center justify-center mb-3">
               <div className="bg-white backdrop-blur-sm py-0 px-3 rounded-xl border border-white/30">
                 <div className="flex items-center gap-2">
-                    <img src="/lumos-logo.webp" alt="Lumos Logo" className="w-10 h-10" />
+                  <img src="/lumos-logo.webp" alt="Lumos Logo" className="w-10 h-10" />
                   <span className="text-xl text-[#273C5A] font-bold">Lumos</span>
                 </div>
               </div>

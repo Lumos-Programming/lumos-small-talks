@@ -5,16 +5,20 @@
 ## デプロイ手順 (Google Cloud Run)
 
 ### 1. Google Cloud プロジェクトの準備
+
 - Firestore を Native Mode で有効化。
 - サービスアカウントを作成し、`Cloud Datastore User` 権限を付与。
 
 ### 2. 環境変数の設定
+
 `.env.example` を参考に、Secret Manager または Cloud Run の環境変数に以下を設定：
+
 - `AUTH_SECRET`, `AUTH_DISCORD_ID`, `AUTH_DISCORD_SECRET`
 - `DISCORD_GUILD_ID` (対象のサーバーID)
 - `FIREBASE_PROJECT_ID`
 
 ### 3. デプロイ実行
+
 Docker を使用して Artifact Registry にプッシュし、Cloud Run にデプロイします。
 
 ```bash
@@ -30,6 +34,7 @@ gcloud run deploy lumos-lt \
 ```
 
 ## ローカル開発とテスト
+
 ```bash
 pnpm install
 # テスト (Javaが必要)
