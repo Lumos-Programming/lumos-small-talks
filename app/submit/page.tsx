@@ -52,7 +52,7 @@ export default async function SubmitPage({searchParams}: { searchParams: Promise
   const data = await getWeekData(weekId)
   const myTalks = data.talks.filter(t => t.presenterUid === session.user?.id)
 
-  const handleAction = async (formData: any) => {
+  const handleAction = async (formData: { title: string; description: string; id?: string }) => {
     "use server"
     const userId = session.user?.id as string
     const userName = session.user?.name as string

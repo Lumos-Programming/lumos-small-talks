@@ -49,7 +49,7 @@ export async function getWeekData(weekId: string): Promise<WeekData> {
 
 export async function addTalk(
   weekId: string,
-  talkData: Omit<Talk, 'id' | 'createdAt' | 'order'>,
+  talkData: Omit<Talk, 'id' | 'createdAt' | 'order' | 'presenterUid'>,
   userId: string
 ): Promise<void> {
   const weekRef = db.collection('weeks').doc(weekId);

@@ -11,11 +11,10 @@ interface SubmitFormProps {
   onCancelEdit?: () => void;
 }
 
-export function SubmitForm({weekId, onSubmit, editingTalk, onCancelEdit}: SubmitFormProps) {
+export function SubmitForm({onSubmit, editingTalk, onCancelEdit}: SubmitFormProps) {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     if (editingTalk) {
@@ -25,21 +24,17 @@ export function SubmitForm({weekId, onSubmit, editingTalk, onCancelEdit}: Submit
       setTitle('')
       setDescription('')
     }
-    setError(null)
   }, [editingTalk])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
-    setError(null)
     try {
       await onSubmit({title, description, id: editingTalk?.id})
       if (!editingTalk) {
         setTitle('')
         setDescription('')
       }
-    } catch (err: any) {
-      setError(err.message || '登録に失敗しました')
     } finally {
       setLoading(false)
     }

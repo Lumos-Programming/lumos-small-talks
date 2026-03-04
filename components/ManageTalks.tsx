@@ -8,7 +8,7 @@ import { SubmitForm } from '@/components/SubmitForm'
 interface ManageTalksProps {
   weekId: string;
   myTalks: Talk[];
-  onAction: (data: any) => Promise<void>;
+  onAction: (data: { title: string; description: string; id?: string }) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
 }
 
