@@ -1,24 +1,27 @@
-import {auth, signIn, signOut} from '@/lib/auth'
-import {getWeekData, addTalk, updateTalk, deleteTalk} from '@/lib/firebase'
-import {getWeekId} from '@/lib/utils'
-import {WeekNavigator} from '@/components/WeekNavigator'
-import {ManageTalks} from '@/components/ManageTalks'
-import {Header} from '@/components/Header'
-import {Button} from '@/components/ui'
-import {revalidatePath} from 'next/cache'
+import { auth, signIn, signOut } from '@/lib/auth'
+import { getWeekData, addTalk, updateTalk, deleteTalk } from '@/lib/firebase'
+import { getWeekId } from '@/lib/utils'
+import { WeekNavigator } from '@/components/WeekNavigator'
+import { ManageTalks } from '@/components/ManageTalks'
+import { Header } from '@/components/Header'
+import { Button } from '@/components/ui'
+import { revalidatePath } from 'next/cache'
 import Link from 'next/link'
 
 export const dynamic = 'force-dynamic'
 
-export default async function SubmitPage({searchParams}: { searchParams: Promise<{ week?: string }> }) {
+export default async function SubmitPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ week?: string }>
+}) {
   const session = await auth()
   const params = await searchParams
   const weekId = params.week || getWeekId()
 
   if (!session) {
     return (
-      <main
-        className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 flex items-center justify-center p-4">
+      <main className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 flex items-center justify-center p-4">
         <div className="bg-white rounded-3xl shadow-2xl p-12 max-w-md w-full text-center">
           <div className="mb-8">
             <div className="w-20 h-20 bg-gradient-primary rounded-2xl mx-auto mb-4 flex items-center justify-center">
@@ -26,13 +29,17 @@ export default async function SubmitPage({searchParams}: { searchParams: Promise
             </div>
             <h1 className="text-3xl font-bold mb-3">発表登録</h1>
             <p className="text-muted-foreground">
-              発表を登録・管理するには<br/>ログインが必要です
+              発表を登録・管理するには
+              <br />
+              ログインが必要です
             </p>
           </div>
-          <form action={async () => {
-            "use server";
-            await signIn("discord")
-          }}>
+          <form
+            action={async () => {
+              'use server'
+              await signIn('discord')
+            }}
+          >
             <Button
               size="lg"
               className="w-full bg-[#5865F2] hover:bg-[#4752C4] text-white py-6 text-lg font-semibold"
@@ -42,7 +49,10 @@ export default async function SubmitPage({searchParams}: { searchParams: Promise
             </Button>
           </form>
           <div className="mt-8 pt-6 border-t">
-            <Link href="/" className="text-sm text-muted-foreground hover:text-purple-600 transition-colors">
+            <Link
+              href="/"
+              className="text-sm text-muted-foreground hover:text-purple-600 transition-colors"
+            >
               ← 公開ページへ戻る
             </Link>
           </div>
@@ -55,17 +65,22 @@ export default async function SubmitPage({searchParams}: { searchParams: Promise
   const myTalks = data.talks.filter(t => t.presenterUid === session.user?.id)
 
   const handleAction = async (formData: { title: string; description: string; id?: string }) => {
-    "use server"
+    'use server'
     const userId = session.user?.id as string
     const userName = session.user?.name as string
     const userAvatar = session.user?.image as string
 
     if (formData.id) {
       // 編集の場合はそのまま更新
-      await updateTalk(weekId, formData.id, {
-        title: formData.title,
-        description: formData.description,
-      }, userId)
+      await updateTalk(
+        weekId,
+        formData.id,
+        {
+          title: formData.title,
+          description: formData.description,
+        },
+        userId
+      )
     } else {
       // 新規登録の場合、既に発表があるかチェック
       const currentData = await getWeekData(weekId)
@@ -75,19 +90,23 @@ export default async function SubmitPage({searchParams}: { searchParams: Promise
         throw new Error('この週には既に発表を登録済みです。週に1件まで登録できます。')
       }
 
-      await addTalk(weekId, {
-        title: formData.title,
-        description: formData.description,
-        presenterName: userName,
-        presenterAvatar: userAvatar,
-      }, userId)
+      await addTalk(
+        weekId,
+        {
+          title: formData.title,
+          description: formData.description,
+          presenterName: userName,
+          presenterAvatar: userAvatar,
+        },
+        userId
+      )
     }
     revalidatePath('/submit')
     revalidatePath('/')
   }
 
   const handleDelete = async (talkId: string) => {
-    "use server"
+    'use server'
     const userId = session.user?.id as string
     await deleteTalk(weekId, talkId, userId)
     revalidatePath('/submit')
@@ -96,7 +115,7 @@ export default async function SubmitPage({searchParams}: { searchParams: Promise
 
   return (
     <main className="min-h-screen">
-      <Header/>
+      <Header />
 
       <div className="bg-gradient-to-br from-purple-50 via-white to-blue-50 min-h-screen">
         <div className="container mx-auto px-4 py-8 max-w-4xl">
@@ -119,13 +138,21 @@ export default async function SubmitPage({searchParams}: { searchParams: Promise
                       className="w-5 h-5 md:w-6 md:h-6 rounded-full"
                     />
                   )}
-                  <span className="font-medium truncate max-w-[120px] md:max-w-none">{session.user?.name}</span>
+                  <span className="font-medium truncate max-w-[120px] md:max-w-none">
+                    {session.user?.name}
+                  </span>
                 </div>
-                <form action={async () => {
-                  "use server";
-                  await signOut()
-                }}>
-                  <Button variant="outline" size="sm" className="hover:bg-red-50 hover:border-red-300 text-sm">
+                <form
+                  action={async () => {
+                    'use server'
+                    await signOut()
+                  }}
+                >
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="hover:bg-red-50 hover:border-red-300 text-sm"
+                  >
                     🚪 ログアウト
                   </Button>
                 </form>
@@ -134,7 +161,7 @@ export default async function SubmitPage({searchParams}: { searchParams: Promise
           </div>
 
           <div className="bg-white rounded-2xl shadow-xl p-6 mb-8">
-            <WeekNavigator currentWeek={weekId} baseUrl="/submit"/>
+            <WeekNavigator currentWeek={weekId} baseUrl="/submit" />
           </div>
 
           <ManageTalks

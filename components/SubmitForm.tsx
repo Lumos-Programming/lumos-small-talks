@@ -1,17 +1,17 @@
 'use client'
 
-import {useState, useEffect} from 'react'
-import {Button, Input, Textarea, Card, CardHeader, CardTitle, CardContent} from './ui'
-import {Talk} from '@/lib/firebase'
+import { useState, useEffect } from 'react'
+import { Button, Input, Textarea, Card, CardHeader, CardTitle, CardContent } from './ui'
+import { Talk } from '@/lib/firebase'
 
 interface SubmitFormProps {
-  weekId: string;
-  onSubmit: (data: { title: string; description: string; id?: string }) => Promise<void>;
-  editingTalk?: Talk | null;
-  onCancelEdit?: () => void;
+  weekId: string
+  onSubmit: (data: { title: string; description: string; id?: string }) => Promise<void>
+  editingTalk?: Talk | null
+  onCancelEdit?: () => void
 }
 
-export function SubmitForm({onSubmit, editingTalk, onCancelEdit}: SubmitFormProps) {
+export function SubmitForm({ onSubmit, editingTalk, onCancelEdit }: SubmitFormProps) {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [loading, setLoading] = useState(false)
@@ -30,7 +30,7 @@ export function SubmitForm({onSubmit, editingTalk, onCancelEdit}: SubmitFormProp
     e.preventDefault()
     setLoading(true)
     try {
-      await onSubmit({title, description, id: editingTalk?.id})
+      await onSubmit({ title, description, id: editingTalk?.id })
       if (!editingTalk) {
         setTitle('')
         setDescription('')
@@ -66,7 +66,7 @@ export function SubmitForm({onSubmit, editingTalk, onCancelEdit}: SubmitFormProp
             </label>
             <Input
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={e => setTitle(e.target.value)}
               placeholder="例: VSCodeの便利な拡張機能を見つけた話"
               required
               className="border-2 focus:border-purple-300"
@@ -88,7 +88,7 @@ export function SubmitForm({onSubmit, editingTalk, onCancelEdit}: SubmitFormProp
             </label>
             <Textarea
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              onChange={e => setDescription(e.target.value)}
               placeholder={`発表の内容を詳しく記載してください
 
 例:

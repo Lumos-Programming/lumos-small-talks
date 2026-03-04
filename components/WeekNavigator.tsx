@@ -3,8 +3,8 @@ import Link from 'next/link'
 import { getRelativeWeekId, getWeekId, formatWeekDate } from '@/lib/utils'
 
 interface WeekNavigatorProps {
-  currentWeek: string;
-  baseUrl: string;
+  currentWeek: string
+  baseUrl: string
 }
 
 export function WeekNavigator({ currentWeek, baseUrl }: WeekNavigatorProps) {
@@ -21,7 +21,11 @@ export function WeekNavigator({ currentWeek, baseUrl }: WeekNavigatorProps) {
       <Link href={`${baseUrl}?week=${prevWeek}`}>
         <Button
           variant={currentWeek === prevWeek ? 'default' : 'outline'}
-          className={currentWeek === prevWeek ? 'bg-gradient-primary flex flex-col items-start py-2 h-auto' : 'hover:bg-purple-50 flex flex-col items-start py-2 h-auto'}
+          className={
+            currentWeek === prevWeek
+              ? 'bg-gradient-primary flex flex-col items-start py-2 h-auto'
+              : 'hover:bg-purple-50 flex flex-col items-start py-2 h-auto'
+          }
         >
           <span className="text-xs">← 前週</span>
           <span className="text-xs font-normal opacity-70">{prevDate}</span>
@@ -30,7 +34,11 @@ export function WeekNavigator({ currentWeek, baseUrl }: WeekNavigatorProps) {
       <Link href={`${baseUrl}?week=${todayWeek}`}>
         <Button
           variant={currentWeek === todayWeek ? 'default' : 'outline'}
-          className={currentWeek === todayWeek ? 'bg-gradient-primary px-6 flex flex-col py-2 h-auto' : 'hover:bg-purple-50 px-6 flex flex-col py-2 h-auto'}
+          className={
+            currentWeek === todayWeek
+              ? 'bg-gradient-primary px-6 flex flex-col py-2 h-auto'
+              : 'hover:bg-purple-50 px-6 flex flex-col py-2 h-auto'
+          }
         >
           <span className="text-sm">📅 今週</span>
           <span className="text-xs font-normal opacity-70">{todayDate}</span>
@@ -39,7 +47,11 @@ export function WeekNavigator({ currentWeek, baseUrl }: WeekNavigatorProps) {
       <Link href={`${baseUrl}?week=${nextWeek}`}>
         <Button
           variant={currentWeek === nextWeek ? 'default' : 'outline'}
-          className={currentWeek === nextWeek ? 'bg-gradient-primary flex flex-col items-end py-2 h-auto' : 'hover:bg-purple-50 flex flex-col items-end py-2 h-auto'}
+          className={
+            currentWeek === nextWeek
+              ? 'bg-gradient-primary flex flex-col items-end py-2 h-auto'
+              : 'hover:bg-purple-50 flex flex-col items-end py-2 h-auto'
+          }
         >
           <span className="text-xs">次週 →</span>
           <span className="text-xs font-normal opacity-70">{nextDate}</span>

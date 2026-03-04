@@ -6,10 +6,10 @@ import { LTCard } from '@/components/LTCard'
 import { SubmitForm } from '@/components/SubmitForm'
 
 interface ManageTalksProps {
-  weekId: string;
-  myTalks: Talk[];
-  onAction: (data: { title: string; description: string; id?: string }) => Promise<void>;
-  onDelete: (id: string) => Promise<void>;
+  weekId: string
+  myTalks: Talk[]
+  onAction: (data: { title: string; description: string; id?: string }) => Promise<void>
+  onDelete: (id: string) => Promise<void>
 }
 
 export function ManageTalks({ weekId, myTalks, onAction, onDelete }: ManageTalksProps) {
@@ -37,7 +37,7 @@ export function ManageTalks({ weekId, myTalks, onAction, onDelete }: ManageTalks
                 key={talk.id}
                 talk={talk}
                 isOwner={true}
-                onEdit={(t) => {
+                onEdit={t => {
                   setEditingTalk(t)
                   window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })
                 }}
@@ -49,10 +49,10 @@ export function ManageTalks({ weekId, myTalks, onAction, onDelete }: ManageTalks
       </div>
 
       {/* 編集中または未登録の場合のみフォームを表示 */}
-      {(editingTalk || !hasRegistered) ? (
+      {editingTalk || !hasRegistered ? (
         <SubmitForm
           weekId={weekId}
-          onSubmit={async (data) => {
+          onSubmit={async data => {
             await onAction(data)
             setEditingTalk(null)
           }}
@@ -64,7 +64,8 @@ export function ManageTalks({ weekId, myTalks, onAction, onDelete }: ManageTalks
           <div className="text-4xl mb-3">✅</div>
           <p className="font-bold text-gray-800 mb-2">この週の発表を登録済みです</p>
           <p className="text-sm text-gray-600">
-            週に1件まで発表を登録できます。<br />
+            週に1件まで発表を登録できます。
+            <br />
             編集する場合は、上のカードの「編集」ボタンをクリックしてください。
           </p>
         </div>
