@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { cn } from '@/lib/utils'
+import Image from 'next/image'
 
 const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
@@ -119,7 +120,9 @@ const Badge = ({
   className,
   variant = 'default',
   ...props
-}: React.HTMLAttributes<HTMLDivElement> & { variant?: 'default' | 'outline' }) => {
+}: React.HTMLAttributes<HTMLDivElement> & {
+  variant?: 'default' | 'outline'
+}) => {
   const variants = {
     default: 'border-transparent bg-primary text-primary-foreground shadow hover:bg-primary/80',
     outline: 'text-foreground border-border bg-transparent',
@@ -139,7 +142,13 @@ const Badge = ({
 const Avatar = ({ src, alt, className }: { src?: string; alt?: string; className?: string }) => (
   <div className={cn('relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full', className)}>
     {src ? (
-      <img src={src} alt={alt} className="aspect-square h-full w-full" />
+      <Image
+        src={src}
+        alt={alt ?? ''}
+        width={100}
+        height={100}
+        className="aspect-square h-full w-full"
+      />
     ) : (
       <div className="flex h-full w-full items-center justify-center rounded-full bg-muted">
         {alt?.charAt(0) || '?'}
