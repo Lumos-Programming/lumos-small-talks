@@ -37,10 +37,10 @@ export default async function HomePage({searchParams}: { searchParams: Promise<{
               <span>Mini LT プロジェクトとは？</span>
             </h3>
             <p className="text-sm text-gray-600 text-center">
-              大きなLTイベントとは別に
-              毎週もっとカジュアルに、雑談チックに
-              やってることや最近取り組んでいることなど
-              小さな進捗をシェアし合える場です。<br/>
+              大きなLTイベントとは別に <br/>
+              もっとカジュアルに、雑談チックに<br/>
+              やってることや最近取り組んでいることなど<br/>
+              毎週小さな進捗をシェアし合える場です。<br/>
               初めての方も誰でも大歓迎!！
             </p>
           </div>
