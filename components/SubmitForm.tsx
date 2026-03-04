@@ -72,7 +72,7 @@ export function SubmitForm({weekId, onSubmit, editingTalk, onCancelEdit}: Submit
             <Input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="例: Reactの最新機能について"
+              placeholder="例: VSCodeの便利な拡張機能を見つけた話"
               required
               className="border-2 focus:border-purple-300"
             />
@@ -94,7 +94,12 @@ export function SubmitForm({weekId, onSubmit, editingTalk, onCancelEdit}: Submit
             <Textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="発表の内容を詳しく記載してください&#10;&#10;例:&#10;- React 19の新機能を紹介&#10;- Server Componentsの使い方&#10;- デモを交えて解説"
+              placeholder={`発表の内容を詳しく記載してください
+
+例:
+- この拡張機能がすごく便利だった
+- 作業効率が上がった具体例
+- みんなにもおすすめしたい`}
               rows={6}
               required
               className="border-2 focus:border-purple-300"
