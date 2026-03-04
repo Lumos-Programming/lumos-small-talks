@@ -7,6 +7,7 @@ import { Header } from '@/components/Header'
 import { Button } from '@/components/ui'
 import { revalidatePath } from 'next/cache'
 import Link from 'next/link'
+import Image from 'next/image'
 
 export const dynamic = 'force-dynamic'
 
@@ -132,7 +133,9 @@ export default async function SubmitPage({
               <div className="flex items-center gap-2 md:gap-4 flex-wrap">
                 <div className="flex items-center gap-2 bg-gradient-primary text-white px-3 md:px-4 py-2 rounded-full text-sm md:text-base">
                   {session.user?.image && (
-                    <img
+                    <Image
+                      width={100}
+                      height={100}
                       src={session.user.image}
                       alt={session.user.name || 'User'}
                       className="w-5 h-5 md:w-6 md:h-6 rounded-full"
