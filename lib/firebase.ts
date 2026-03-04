@@ -1,22 +1,29 @@
 import * as admin from 'firebase-admin';
 
-if (!admin.apps.length) {
-  if (process.env.FIRESTORE_EMULATOR_HOST) {
-    admin.initializeApp({
-      projectId: process.env.FIREBASE_PROJECT_ID || 'test-project',
-    });
-  } else {
-    admin.initializeApp({
-      credential: admin.credential.cert({
-        projectId: process.env.FIREBASE_PROJECT_ID,
-        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-        privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-      }),
-    });
+// Initialize Firebase lazily
+function initializeFirebase() {
+  if (!admin.apps.length) {
+    if (process.env.FIRESTORE_EMULATOR_HOST) {
+      admin.initializeApp({
+        projectId: process.env.FIREBASE_PROJECT_ID || 'test-project',
+      });
+    } else if (process.env.FIREBASE_PROJECT_ID) {
+      admin.initializeApp({
+        credential: admin.credential.cert({
+          projectId: process.env.FIREBASE_PROJECT_ID,
+          clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+          privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+        }),
+      });
+    }
   }
 }
 
-const db = admin.firestore();
+// Lazy getter for db
+function getDb() {
+  initializeFirebase();
+  return admin.firestore();
+}
 
 export type Talk = {
   id: string;
@@ -36,7 +43,7 @@ export type WeekData = {
 };
 
 export async function getWeekData(weekId: string): Promise<WeekData> {
-  const doc = await db.collection('weeks').doc(weekId).get();
+  const doc = await getDb().collection('weeks').doc(weekId).get();
   if (!doc.exists) {
     return {
       weekString: weekId,
@@ -52,6 +59,7 @@ export async function addTalk(
   talkData: Omit<Talk, 'id' | 'createdAt' | 'order' | 'presenterUid'>,
   userId: string
 ): Promise<void> {
+  const db = getDb();
   const weekRef = db.collection('weeks').doc(weekId);
 
   await db.runTransaction(async (transaction) => {
@@ -91,6 +99,7 @@ export async function updateTalk(
   updates: Partial<Pick<Talk, 'title' | 'description'>>,
   userId: string
 ): Promise<void> {
+  const db = getDb();
   const weekRef = db.collection('weeks').doc(weekId);
 
   await db.runTransaction(async (transaction) => {
@@ -115,6 +124,7 @@ export async function deleteTalk(
   talkId: string,
   userId: string
 ): Promise<void> {
+  const db = getDb();
   const weekRef = db.collection('weeks').doc(weekId);
 
   await db.runTransaction(async (transaction) => {
