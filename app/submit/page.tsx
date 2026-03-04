@@ -4,7 +4,7 @@ import {getWeekId} from '@/lib/utils'
 import {WeekNavigator} from '@/components/WeekNavigator'
 import {ManageTalks} from '@/components/ManageTalks'
 import {Header} from '@/components/Header'
-import {Button, Badge} from '@/components/ui'
+import {Button} from '@/components/ui'
 import {revalidatePath} from 'next/cache'
 import Link from 'next/link'
 
@@ -100,25 +100,32 @@ export default async function SubmitPage({searchParams}: { searchParams: Promise
 
       <div className="bg-gradient-to-br from-purple-50 via-white to-blue-50 min-h-screen">
         <div className="container mx-auto px-4 py-8 max-w-4xl">
-          <div className="bg-white rounded-2xl shadow-xl p-6 mb-8">
-            <div className="flex justify-between items-center">
+          <div className="bg-white rounded-2xl shadow-xl p-4 md:p-6 mb-8">
+            <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
               <div>
-                <h1 className="text-3xl font-bold text-black bg-clip-text text-transparent">
+                <h1 className="text-2xl md:text-3xl font-bold text-black bg-clip-text">
                   📝 発表エントリーページ
                 </h1>
                 <p className="text-sm text-muted-foreground mt-1">
                   あなたの発表を登録・編集できます
                 </p>
               </div>
-              <div className="flex items-center gap-4">
-                <Badge className="bg-gradient-primary text-white px-4 py-2">
-                  👤 {session.user?.name}
-                </Badge>
+              <div className="flex items-center gap-2 md:gap-4 flex-wrap">
+                <div className="flex items-center gap-2 bg-gradient-primary text-white px-3 md:px-4 py-2 rounded-full text-sm md:text-base">
+                  {session.user?.image && (
+                    <img
+                      src={session.user.image}
+                      alt={session.user.name || 'User'}
+                      className="w-5 h-5 md:w-6 md:h-6 rounded-full"
+                    />
+                  )}
+                  <span className="font-medium truncate max-w-[120px] md:max-w-none">{session.user?.name}</span>
+                </div>
                 <form action={async () => {
                   "use server";
                   await signOut()
                 }}>
-                  <Button variant="outline" size="sm" className="hover:bg-red-50 hover:border-red-300">
+                  <Button variant="outline" size="sm" className="hover:bg-red-50 hover:border-red-300 text-sm">
                     🚪 ログアウト
                   </Button>
                 </form>
