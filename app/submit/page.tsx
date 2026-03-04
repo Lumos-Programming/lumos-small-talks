@@ -1,6 +1,6 @@
 import { auth, signIn, signOut } from '@/lib/auth'
 import { getWeekData, addTalk, updateTalk, deleteTalk } from '@/lib/firebase'
-import { getWeekId } from '@/lib/utils'
+import { getNextEventWeekId } from '@/lib/utils'
 import { WeekNavigator } from '@/components/WeekNavigator'
 import { ManageTalks } from '@/components/ManageTalks'
 import { Header } from '@/components/Header'
@@ -18,7 +18,7 @@ export default async function SubmitPage({
 }) {
   const session = await auth()
   const params = await searchParams
-  const weekId = params.week || getWeekId()
+  const weekId = params.week || getNextEventWeekId()
 
   if (!session) {
     return (

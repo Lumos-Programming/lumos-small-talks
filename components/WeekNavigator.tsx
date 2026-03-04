@@ -12,15 +12,24 @@ export function WeekNavigator({ currentWeek, baseUrl }: WeekNavigatorProps) {
   const now = new Date()
   const isMonday = now.getDay() === 1
   const hour = now.getHours()
-  const isDuringEvent = isMonday && hour >= 21 && hour < 22
+  const isDuringEvent = isMonday && hour >= 21
 
   // イベント基準の週を計算
-  // 月曜21:00以降は「次回」が次の週になる
-  const offset = isDuringEvent ? 0 : 1
+  // イベント開催中（月曜21:00〜24:00）: 前回=先週、今回=今週、次回=来週
+  // イベント前（火曜〜次の月曜21:00前）: 前回=先週、次回=今週、次々回=来週
+  let prevWeek, centerWeek, nextWeek
 
-  const prevWeek = getRelativeWeekId(offset - 2)
-  const centerWeek = getRelativeWeekId(offset - 1)
-  const nextWeek = getRelativeWeekId(offset)
+  if (isDuringEvent) {
+    // イベント開催中
+    prevWeek = getRelativeWeekId(-1) // 先週
+    centerWeek = getRelativeWeekId(0) // 今週
+    nextWeek = getRelativeWeekId(1) // 来週
+  } else {
+    // 火曜〜次の月曜21:00前
+    prevWeek = getRelativeWeekId(0) // 今週
+    centerWeek = getRelativeWeekId(1) // 来週
+    nextWeek = getRelativeWeekId(2) // 再来週
+  }
 
   const prevDate = formatWeekDate(prevWeek)
   const centerDate = formatWeekDate(centerWeek)

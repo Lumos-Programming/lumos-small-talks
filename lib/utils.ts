@@ -33,3 +33,14 @@ export function formatWeekDate(weekId: string): string {
     return weekId
   }
 }
+
+// 次回イベントの週IDを取得（イベント開催時間を考慮）
+export function getNextEventWeekId(): string {
+  const now = new Date()
+  const isMonday = now.getDay() === 1
+  const hour = now.getHours()
+  const isDuringEvent = isMonday && hour >= 21 && hour < 22
+
+  // イベント開催中は今週、それ以外は来週
+  return isDuringEvent ? getWeekId() : getRelativeWeekId(1)
+}
