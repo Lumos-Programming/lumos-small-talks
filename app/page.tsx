@@ -28,42 +28,47 @@ export default async function HomePage({searchParams}: { searchParams: Promise<{
       </div>
 
       <div className="container mx-auto px-4 py-6 max-w-5xl">
-        {/* Mini LT プロジェクトとは？ */}
-        <div className="bg-gradient-card rounded-2xl p-5 mb-6 border border-purple-100">
-          <h3 className="text-lg font-bold text-gray-800 mb-2 flex items-center justify-center gap-2">
-            <span>💡</span>
-            <span>Mini LT プロジェクトとは？</span>
-          </h3>
-          <p className="text-sm text-gray-600 text-center max-w-2xl mx-auto">
-            大きなLTイベントとは別に<br className="hidden sm:block"/>
-            毎週もっとカジュアルに、雑談チックに<br className="hidden sm:block"/>
-            やってることや最近取り組んでいることなど<br className="hidden sm:block"/>
-            小さな進捗をシェアし合える場です。<br/>
-            初めての方も誰でも大歓迎!！
-          </p>
-        </div>
-        <div className="bg-gradient-to-r from-orange-50 to-yellow-50 rounded-2xl p-6 mb-2 border-2 border-orange-200">
-          <div className="text-center">
-            <h2 className="text-xl font-bold text-gray-800 mb-2">
-              💬 あなたも話してみませんか？
-            </h2>
-            <p className="text-sm text-gray-600 mb-3">
-              やってること、進捗、ちょっとした知見...なんでもOK！<br/>
-              資料なし・5分だけでも大歓迎です ✨
+        {/* Two-column layout on desktop, stacked on mobile */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-2">
+          {/* Mini LT プロジェクトとは？ */}
+          <div className="bg-gradient-card rounded-2xl p-5 border border-purple-100">
+            <h3 className="text-lg font-bold text-gray-800 mb-2 flex items-center justify-center gap-2">
+              <span>💡</span>
+              <span>Mini LT プロジェクトとは？</span>
+            </h3>
+            <p className="text-sm text-gray-600 text-center">
+              大きなLTイベントとは別に
+              毎週もっとカジュアルに、雑談チックに
+              やってることや最近取り組んでいることなど
+              小さな進捗をシェアし合える場です。<br/>
+              初めての方も誰でも大歓迎!！
             </p>
-            <div className="flex flex-wrap gap-2 justify-center mb-4 text-xs">
-              <span className="bg-white px-3 py-1 rounded-full text-gray-700">🔰 初心者歓迎</span>
-              <span className="bg-white px-3 py-1 rounded-full text-gray-700">📄 資料なしOK</span>
-              <span className="bg-white px-3 py-1 rounded-full text-gray-700">⏱️ 5分でもOK</span>
-              <span className="bg-white px-3 py-1 rounded-full text-gray-700">💭 雑談ベース</span>
+          </div>
+
+          {/* あなたも話してみませんか？ */}
+          <div className="bg-gradient-to-r from-orange-50 to-yellow-50 rounded-2xl p-5 border-2 border-orange-200">
+            <div className="text-center">
+              <h2 className="text-lg font-bold text-gray-800 mb-2">
+                💬 あなたも話してみませんか？
+              </h2>
+              <p className="text-sm text-gray-600 mb-3">
+                やってること、進捗、ちょっとした知見...なんでもOK！<br/>
+                資料なし・5分だけでも大歓迎です ✨
+              </p>
+              <div className="flex flex-wrap gap-2 justify-center mb-4 text-xs">
+                <span className="bg-white px-3 py-1 rounded-full text-gray-700">🔰 初心者歓迎</span>
+                <span className="bg-white px-3 py-1 rounded-full text-gray-700">📄 資料なしOK</span>
+                <span className="bg-white px-3 py-1 rounded-full text-gray-700">⏱️ 5分でもOK</span>
+                <span className="bg-white px-3 py-1 rounded-full text-gray-700">💭 雑談ベース</span>
+              </div>
+              <Link href="/submit">
+                <button
+                  className="bg-gradient-to-r from-orange-500 to-yellow-500 text-white px-8 py-3 rounded-xl font-bold hover:shadow-xl transition-all hover:scale-105 flex items-center gap-2 mx-auto">
+                  <span className="text-xl">🎤</span>
+                  <span>気軽に発表登録してみる</span>
+                </button>
+              </Link>
             </div>
-            <Link href="/submit">
-              <button
-                className="bg-gradient-to-r from-orange-500 to-yellow-500 text-white px-8 py-3 rounded-xl font-bold hover:shadow-xl transition-all hover:scale-105 flex items-center gap-2 mx-auto">
-                <span className="text-xl">🎤</span>
-                <span>気軽に発表登録してみる</span>
-              </button>
-            </Link>
           </div>
         </div>
         <div className="bg-white rounded-2xl shadow-md p-2 mb-4">
