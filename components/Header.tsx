@@ -9,13 +9,10 @@ export function Header() {
           <div className="text-center text-white cursor-pointer hover:opacity-90 transition-opacity">
             {/* Lumos Logo Area */}
             <div className="flex items-center justify-center mb-3">
-              <div className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-xl border border-white/30">
+              <div className="bg-white backdrop-blur-sm py-0 px-3 rounded-xl border border-white/30">
                 <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 bg-white/90 rounded-lg flex items-center justify-center">
-                    {/* Placeholder for Lumos Logo - replace with actual logo */}
-                    <span className="text-lg font-bold bg-gradient-primary bg-clip-text text-transparent">L</span>
-                  </div>
-                  <span className="text-base font-bold">Lumos</span>
+                    <img src="/lumos-logo.webp" alt="Lumos Logo" className="w-10 h-10" />
+                  <span className="text-xl text-[#273C5A] font-bold">Lumos</span>
                 </div>
               </div>
             </div>
@@ -23,9 +20,9 @@ export function Header() {
             <h1 className="text-3xl md:text-4xl font-extrabold mb-1 tracking-tight">
               Mini LT プロジェクト
             </h1>
-            {/*<p className="text-sm text-white/90">*/}
-            {/*  ☕️ 気軽に雑談ベースで共有する場*/}
-            {/*</p>*/}
+            <p className="text-sm text-white/90">
+              ☕️ カジュアルに最近取り組んでいることを共有してみよう!
+            </p>
           </div>
         </Link>
       </div>
