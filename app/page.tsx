@@ -23,7 +23,7 @@ export default async function HomePage({
   const weekLabel = getWeekLabel(weekId)
 
   return (
-    <main className="min-h-screen">
+    <main>
       <Header />
 
       {/* Week Info Section */}

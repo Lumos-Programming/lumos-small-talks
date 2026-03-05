@@ -22,7 +22,7 @@ export default async function SubmitPage({
 
   if (!session) {
     return (
-      <main className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 flex items-center justify-center p-4">
+      <main className="bg-gradient-to-br from-purple-50 via-white to-blue-50 flex items-center justify-center p-4 min-h-[80vh]">
         <div className="bg-white rounded-3xl shadow-2xl p-12 max-w-md w-full text-center">
           <div className="mb-8">
             <div className="w-20 h-20 bg-gradient-primary rounded-2xl mx-auto mb-4 flex items-center justify-center">
