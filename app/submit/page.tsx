@@ -66,7 +66,12 @@ export default async function SubmitPage({
   const data = await getWeekData(weekId)
   const myTalks = data.talks.filter(t => t.presenterUid === session.user?.id)
 
-  const handleAction = async (formData: { title: string; description: string; id?: string }) => {
+  const handleAction = async (formData: {
+    title: string
+    description: string
+    duration: number
+    id?: string
+  }) => {
     'use server'
     const userId = session.user?.id as string
     const userName = session.user?.name as string
@@ -80,6 +85,7 @@ export default async function SubmitPage({
         {
           title: formData.title,
           description: formData.description,
+          duration: formData.duration,
         },
         userId
       )
@@ -97,6 +103,7 @@ export default async function SubmitPage({
         {
           title: formData.title,
           description: formData.description,
+          duration: formData.duration,
           presenterName: userName,
           presenterAvatar: userAvatar,
         },

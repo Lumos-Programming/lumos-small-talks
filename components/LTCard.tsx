@@ -21,11 +21,17 @@ export function LTCard({ talk, onEdit, onDelete, isOwner }: LTCardProps) {
           className="h-14 w-14 ring-2 ring-purple-100"
         />
         <div className="flex-1 space-y-2">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between flex-wrap gap-2">
             <Badge className="bg-gradient-primary text-white">{talk.presenterName}</Badge>
-            <span className="text-xs font-bold text-purple-600 bg-purple-50 px-2 py-1 rounded-full">
-              #{talk.order}
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-semibold text-orange-600 bg-orange-50 px-2 py-1 rounded-full flex items-center gap-1">
+                <span>⏱️</span>
+                <span>{talk.duration}分</span>
+              </span>
+              <span className="text-xs font-bold text-purple-600 bg-purple-50 px-2 py-1 rounded-full">
+                #{talk.order}
+              </span>
+            </div>
           </div>
           <CardTitle className="text-xl font-bold leading-tight">{talk.title}</CardTitle>
         </div>

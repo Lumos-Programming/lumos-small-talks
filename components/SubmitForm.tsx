@@ -6,23 +6,33 @@ import { Talk } from '@/lib/firebase'
 
 interface SubmitFormProps {
   weekId: string
-  onSubmit: (data: { title: string; description: string; id?: string }) => Promise<void>
+  onSubmit: (data: {
+    title: string
+    description: string
+    duration: number
+    id?: string
+  }) => Promise<void>
   editingTalk?: Talk | null
   onCancelEdit?: () => void
 }
 
+const DURATION_OPTIONS = [1, 3, 5, 7, 10, 15] as const
+
 export function SubmitForm({ onSubmit, editingTalk, onCancelEdit }: SubmitFormProps) {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
+  const [duration, setDuration] = useState<number>(5) // Default 5 minutes
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     if (editingTalk) {
       setTitle(editingTalk.title)
       setDescription(editingTalk.description)
+      setDuration(editingTalk.duration)
     } else {
       setTitle('')
       setDescription('')
+      setDuration(5) // Reset to default
     }
   }, [editingTalk])
 
@@ -30,10 +40,11 @@ export function SubmitForm({ onSubmit, editingTalk, onCancelEdit }: SubmitFormPr
     e.preventDefault()
     setLoading(true)
     try {
-      await onSubmit({ title, description, id: editingTalk?.id })
+      await onSubmit({ title, description, duration, id: editingTalk?.id })
       if (!editingTalk) {
         setTitle('')
         setDescription('')
+        setDuration(5)
       }
     } finally {
       setLoading(false)
@@ -71,6 +82,28 @@ export function SubmitForm({ onSubmit, editingTalk, onCancelEdit }: SubmitFormPr
               required
               className="border-2 focus:border-purple-300"
             />
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm font-semibold flex items-center gap-2">
+              <span className="text-purple-600">⏱️</span>
+              発表時間
+            </label>
+            <div className="flex flex-wrap gap-2">
+              {DURATION_OPTIONS.map(minutes => (
+                <button
+                  key={minutes}
+                  type="button"
+                  onClick={() => setDuration(minutes)}
+                  className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                    duration === minutes
+                      ? 'bg-purple-600 text-white shadow-md scale-105'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  {minutes}分
+                </button>
+              ))}
+            </div>
           </div>
           <div className="space-y-2">
             <label className="text-sm font-semibold flex items-center gap-2">
