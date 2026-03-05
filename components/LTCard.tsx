@@ -61,8 +61,10 @@ export function LTCard({ talk, onEdit, onDelete, isOwner }: LTCardProps) {
         {format(
           talk.createdAt instanceof Date
             ? talk.createdAt
-            : typeof talk.createdAt === 'object' && 'seconds' in talk.createdAt
-              ? new Date(talk.createdAt.seconds * 1000)
+            : typeof talk.createdAt === 'object' && '_seconds' in talk.createdAt
+            // @ts-expect-error ClientComponentにFirestoreのTimestamp型をjson objectとして渡しているため、_secondsプロパティが存在する前提で型アサーション
+              // ? new Date(talk.createdAt._seconds * 1000).toLocaleDateString('ja-JP')
+              ? new Date(talk.createdAt._seconds * 1000)
               : new Date(),
           'yyyy-MM-dd HH:mm'
         )}
