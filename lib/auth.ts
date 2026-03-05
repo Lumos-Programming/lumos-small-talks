@@ -4,7 +4,8 @@ import Discord from 'next-auth/providers/discord'
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
     Discord({
-      authorization: 'https://discord.com/api/oauth2/authorize?scope=identify+guilds+guilds.members.read',
+      authorization:
+        'https://discord.com/api/oauth2/authorize?scope=identify+guilds+guilds.members.read',
     }),
   ],
   callbacks: {
@@ -33,14 +34,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         if (guildId && adminRoleId) {
           try {
-            const res = await fetch(
-              `https://discord.com/api/users/@me/guilds/${guildId}/member`,
-              {
-                headers: {
-                  Authorization: `Bearer ${account.access_token}`,
-                },
-              }
-            )
+            const res = await fetch(`https://discord.com/api/users/@me/guilds/${guildId}/member`, {
+              headers: {
+                Authorization: `Bearer ${account.access_token}`,
+              },
+            })
             const member = await res.json()
             token.isAdmin = member.roles?.includes(adminRoleId) || false
           } catch (e) {

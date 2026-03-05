@@ -31,9 +31,7 @@ export type DiscordEvent = {
 /**
  * Create a Discord scheduled event
  */
-export async function createDiscordEvent(
-  params: CreateDiscordEventParams
-): Promise<DiscordEvent> {
+export async function createDiscordEvent(params: CreateDiscordEventParams): Promise<DiscordEvent> {
   const guildId = process.env.DISCORD_GUILD_ID
   const botToken = process.env.DISCORD_BOT_TOKEN
 

@@ -1,7 +1,11 @@
 import { auth, isAdmin } from '@/lib/auth'
 import { getWeekData } from '@/lib/firebase'
 import { getNextEventWeekId, formatWeekDate } from '@/lib/utils'
-import { createWeekEvent, syncWeekEventDescription, deleteWeekEvent } from '@/lib/actions/discord-events'
+import {
+  createWeekEvent,
+  syncWeekEventDescription,
+  deleteWeekEvent,
+} from '@/lib/actions/discord-events'
 import { WeekNavigator } from '@/components/WeekNavigator'
 import { Header } from '@/components/Header'
 import { InterestedUsers } from '@/components/InterestedUsers'
@@ -26,9 +30,7 @@ export default async function AdminPage({
             <CardTitle>🔐 Admin Dashboard</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-muted-foreground mb-4">
-              Admin機能を使用するにはログインが必要です
-            </p>
+            <p className="text-muted-foreground mb-4">Admin機能を使用するにはログインが必要です</p>
             <Link href="/submit">
               <Button>ログインページへ</Button>
             </Link>
@@ -46,9 +48,7 @@ export default async function AdminPage({
             <CardTitle>⛔ アクセス拒否</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-muted-foreground mb-4">
-              このページにアクセスする権限がありません
-            </p>
+            <p className="text-muted-foreground mb-4">このページにアクセスする権限がありません</p>
             <Link href="/">
               <Button variant="outline">トップページへ戻る</Button>
             </Link>
@@ -73,9 +73,7 @@ export default async function AdminPage({
             <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
               <div>
                 <h1 className="text-2xl md:text-3xl font-bold">⚙️ Admin Dashboard</h1>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Discord イベント管理
-                </p>
+                <p className="text-sm text-muted-foreground mt-1">Discord イベント管理</p>
               </div>
               <div className="flex items-center gap-2">
                 <Badge variant="outline" className="bg-purple-50">
