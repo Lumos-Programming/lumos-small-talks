@@ -4,16 +4,36 @@ FROM shion1305/pnpm:24-alpine AS base
 
 FROM base AS deps
 WORKDIR /app
-COPY package.json pnpm-lock.yaml* ./
-RUN pnpm i --frozen-lockfile
+
+# Copy only lockfile first for better layer caching
+COPY pnpm-lock.yaml ./
+
+# Fetch dependencies into virtual store (doesn't require package.json)
+RUN pnpm fetch --prod
+
+# Copy package.json and install from cache
+COPY package.json ./
+RUN pnpm install --frozen-lockfile --offline --prod
 
 FROM base AS builder
 WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
+
+# Copy lockfile for fetch
+COPY pnpm-lock.yaml ./
+
+# Fetch all dependencies (including dev)
+RUN pnpm fetch
+
+# Copy package.json and install from cache
+COPY package.json ./
+RUN pnpm install --frozen-lockfile --offline
+
 COPY . .
+
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
 ENV NEXT_TELEMETRY_DISABLED 1
+
 RUN pnpm run build
 
 # Production image, copy all the files and run next
