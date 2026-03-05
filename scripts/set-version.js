@@ -9,6 +9,7 @@
 const { execSync } = require('child_process')
 const fs = require('fs')
 const path = require('path')
+const versionFilePath = path.join(__dirname, '..', 'lib', 'version.json')
 
 try {
   // Get the current git commit SHA (short version)
@@ -25,8 +26,7 @@ try {
   }
 
   // Write to a JSON file that can be imported
-  const outputPath = path.join(__dirname, '..', 'lib', 'version.json')
-  fs.writeFileSync(outputPath, JSON.stringify(versionInfo, null, 2))
+  fs.writeFileSync(versionFilePath, JSON.stringify(versionInfo, null, 2))
 
   console.log('Version info generated:')
   console.log(`  Commit SHA: ${commitSha}`)
@@ -38,6 +38,5 @@ try {
     commitSha: 'unknown',
     buildDate: new Date().toISOString(),
   }
-  const outputPath = path.join(__dirname, '..', 'lib', 'version.json')
-  fs.writeFileSync(outputPath, JSON.stringify(fallbackVersion, null, 2))
+  fs.writeFileSync(versionFilePath, JSON.stringify(fallbackVersion, null, 2))
 }
