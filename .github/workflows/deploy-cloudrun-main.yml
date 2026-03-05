@@ -51,6 +51,9 @@ jobs:
           file: ./Dockerfile
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          build-args: |
+            COMMIT_SHA=${{ github.sha }}
+            BUILD_DATE=${{ github.event.head_commit.timestamp }}
 
       - name: Download Cloud Run Service YAML
         run: |

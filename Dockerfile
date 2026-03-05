@@ -18,6 +18,13 @@ RUN pnpm install --frozen-lockfile --offline --prod
 FROM base AS builder
 WORKDIR /app
 
+# Install git for local builds (when COMMIT_SHA is not provided)
+RUN apk add --no-cache git
+
+# Accept build arguments for version info
+ARG COMMIT_SHA
+ARG BUILD_DATE
+
 # Copy lockfile for fetch
 COPY pnpm-lock.yaml ./
 
@@ -29,7 +36,14 @@ COPY package.json ./
 RUN pnpm install --frozen-lockfile --offline
 
 COPY . .
-RUN pnpm run update-version
+
+# Generate version.json before build
+# If COMMIT_SHA is not provided, try to get it from git (for local builds)
+# If BUILD_DATE is not provided, use current date
+RUN mkdir -p lib && \
+    COMMIT=${COMMIT_SHA:-$(git rev-parse --short HEAD 2>/dev/null || echo "dev")} && \
+    BUILD_TIME=${BUILD_DATE:-$(date -u +"%Y-%m-%dT%H:%M:%SZ")} && \
+    echo "{\"commitSha\":\"${COMMIT}\",\"buildDate\":\"${BUILD_TIME}\"}" > lib/version.json
 
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
