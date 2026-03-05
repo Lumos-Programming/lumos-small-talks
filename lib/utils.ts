@@ -115,3 +115,28 @@ export function getWeekLabel(
   if (weekId === nextWeek) return rightLabel
   return '今週'
 }
+
+// Get the next event date from a given date
+export function getNextEventDate(
+  from: Date = new Date(),
+  config: EventConfig = EVENT_CONFIG
+): Date {
+  const targetDayOfWeek = from.getDay()
+  const eventDayOfWeek = config.dayOfWeek
+
+  if (targetDayOfWeek === eventDayOfWeek) {
+    // Target date is already the event day
+    return from
+  } else {
+    // Calculate days until next event day
+    let daysUntilEvent = eventDayOfWeek - targetDayOfWeek
+    if (daysUntilEvent <= 0) {
+      // Event day already passed this week, go to next week
+      daysUntilEvent += 7
+    }
+    // Use a temporary variable to avoid mutating the original date
+    const result = new Date(from)
+    result.setDate(result.getDate() + daysUntilEvent)
+    return result
+  }
+}

@@ -5,6 +5,7 @@ import {
   getNavigationWeeks,
   getNextEventWeekId,
   getWeekLabel,
+  getNextEventDate,
   EVENT_CONFIG,
   type EventConfig,
 } from './utils'
@@ -290,6 +291,108 @@ describe('週次ロジックのテスト', () => {
 
       expect(duringNav.centerLabel).toBe('今回')
       expect(beforeNav.centerLabel).toBe('次回')
+    })
+  })
+
+  describe('getNextEventDate', () => {
+    it('イベント日（月曜日）が渡された場合、その日をそのまま返す', () => {
+      const monday = createDateForDayAndTime(1, 10, 0) // 月曜日 10:00
+      const result = getNextEventDate(monday)
+      expect(result.getDay()).toBe(1) // Monday
+      expect(result.getDate()).toBe(monday.getDate())
+    })
+
+    it('火曜日が渡された場合、次の月曜日を返す', () => {
+      const tuesday = createDateForDayAndTime(2, 10, 0) // 火曜日 10:00
+      const result = getNextEventDate(tuesday)
+      expect(result.getDay()).toBe(1) // Monday
+      expect(result.getDate()).toBe(tuesday.getDate() + 6) // 6日後の月曜日
+    })
+
+    it('水曜日が渡された場合、次の月曜日を返す', () => {
+      const wednesday = createDateForDayAndTime(3, 10, 0) // 水曜日 10:00
+      const result = getNextEventDate(wednesday)
+      expect(result.getDay()).toBe(1) // Monday
+      expect(result.getDate()).toBe(wednesday.getDate() + 5) // 5日後の月曜日
+    })
+
+    it('日曜日が渡された場合、次の月曜日を返す', () => {
+      const sunday = createDateForDayAndTime(0, 10, 0) // 日曜日 10:00
+      const result = getNextEventDate(sunday)
+      expect(result.getDay()).toBe(1) // Monday
+      expect(result.getDate()).toBe(sunday.getDate() + 1) // 1日後の月曜日
+    })
+
+    it('土曜日が渡された場合、次の月曜日を返す', () => {
+      const saturday = createDateForDayAndTime(6, 10, 0) // 土曜日 10:00
+      const result = getNextEventDate(saturday)
+      expect(result.getDay()).toBe(1) // Monday
+      expect(result.getDate()).toBe(saturday.getDate() + 2) // 2日後の月曜日
+    })
+
+    it('異なるEVENT_CONFIGで正しく動作する（水曜日イベント）', () => {
+      const wednesdayConfig: EventConfig = {
+        dayOfWeek: 3, // 水曜日
+        startHour: 19,
+        endHour: 20,
+      }
+
+      // 月曜日から水曜日を探す
+      const monday = createDateForDayAndTime(1, 10, 0)
+      const result = getNextEventDate(monday, wednesdayConfig)
+      expect(result.getDay()).toBe(3) // Wednesday
+      expect(result.getDate()).toBe(monday.getDate() + 2)
+
+      // 水曜日は水曜日を返す
+      const wednesday = createDateForDayAndTime(3, 10, 0)
+      const result2 = getNextEventDate(wednesday, wednesdayConfig)
+      expect(result2.getDay()).toBe(3)
+      expect(result2.getDate()).toBe(wednesday.getDate())
+
+      // 木曜日から次の水曜日を探す
+      const thursday = createDateForDayAndTime(4, 10, 0)
+      const result3 = getNextEventDate(thursday, wednesdayConfig)
+      expect(result3.getDay()).toBe(3)
+      expect(result3.getDate()).toBe(thursday.getDate() + 6)
+    })
+
+    it('異なるEVENT_CONFIGで正しく動作する（日曜日イベント）', () => {
+      const sundayConfig: EventConfig = {
+        dayOfWeek: 0, // 日曜日
+        startHour: 10,
+        endHour: 12,
+      }
+
+      // 月曜日から日曜日を探す
+      const monday = createDateForDayAndTime(1, 10, 0)
+      const result = getNextEventDate(monday, sundayConfig)
+      expect(result.getDay()).toBe(0) // Sunday
+      expect(result.getDate()).toBe(monday.getDate() + 6)
+
+      // 土曜日から日曜日を探す
+      const saturday = createDateForDayAndTime(6, 10, 0)
+      const result2 = getNextEventDate(saturday, sundayConfig)
+      expect(result2.getDay()).toBe(0)
+      expect(result2.getDate()).toBe(saturday.getDate() + 1)
+
+      // 日曜日は日曜日を返す
+      const sunday = createDateForDayAndTime(0, 10, 0)
+      const result3 = getNextEventDate(sunday, sundayConfig)
+      expect(result3.getDay()).toBe(0)
+      expect(result3.getDate()).toBe(sunday.getDate())
+    })
+
+    it('元のDateオブジェクトを変更しないこと', () => {
+      const original = createDateForDayAndTime(2, 10, 0) // 火曜日
+      const originalDate = original.getDate()
+      const result = getNextEventDate(original)
+
+      // 元のオブジェクトが変更されていないことを確認
+      expect(original.getDate()).toBe(originalDate)
+      expect(original.getDay()).toBe(2)
+
+      // 結果は異なるオブジェクトであることを確認
+      expect(result).not.toBe(original)
     })
   })
 
