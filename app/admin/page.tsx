@@ -4,6 +4,7 @@ import { getNextEventWeekId, formatWeekDate } from '@/lib/utils'
 import { createWeekEvent, syncWeekEventDescription, deleteWeekEvent } from '@/lib/actions/discord-events'
 import { WeekNavigator } from '@/components/WeekNavigator'
 import { Header } from '@/components/Header'
+import { InterestedUsers } from '@/components/InterestedUsers'
 import { Button, Card, CardHeader, CardTitle, CardContent, Badge } from '@/components/ui'
 import Link from 'next/link'
 
@@ -107,6 +108,10 @@ export default async function AdminPage({
                         → Discordで開く
                       </a>
                     )}
+                  </div>
+
+                  <div className="border-t pt-4">
+                    <InterestedUsers eventId={data.discordEventId} />
                   </div>
 
                   <div className="flex gap-2">

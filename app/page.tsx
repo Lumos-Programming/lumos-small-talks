@@ -3,6 +3,7 @@ import { getNextEventWeekId, formatWeekDate, getWeekLabel } from '@/lib/utils'
 import { LTCard } from '@/components/LTCard'
 import { WeekNavigator } from '@/components/WeekNavigator'
 import { Header } from '@/components/Header'
+import { InterestedUsers } from '@/components/InterestedUsers'
 import { Badge } from '@/components/ui'
 import Link from 'next/link'
 
@@ -87,6 +88,13 @@ export default async function HomePage({
         <div className="bg-white rounded-2xl shadow-md p-2 mb-4">
           <WeekNavigator currentWeek={weekId} baseUrl="/" />
         </div>
+
+        {/* Discord Event Interested Users */}
+        {data.discordEventId && (
+          <div className="rounded-2xl p-2">
+            <InterestedUsers eventId={data.discordEventId} />
+          </div>
+        )}
 
         {data.talks.length === 0 ? (
           <div className="text-center py-12 bg-white rounded-2xl border-2 border-dashed border-gray-200">
