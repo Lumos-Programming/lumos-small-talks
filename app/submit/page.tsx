@@ -1,4 +1,4 @@
-import { auth, signIn, signOut } from '@/lib/auth'
+import { auth, signIn, signOut, isValidSnowflake } from '@/lib/auth'
 import { getWeekData, addTalk, updateTalk, deleteTalk } from '@/lib/firebase'
 import { getNextEventWeekId } from '@/lib/utils'
 import { createWeekEvent, syncWeekEventDescription } from '@/lib/actions/discord-events'
@@ -9,6 +9,7 @@ import { Button } from '@/components/ui'
 import { revalidatePath } from 'next/cache'
 import Link from 'next/link'
 import Image from 'next/image'
+import { redirect } from 'next/navigation'
 
 export const dynamic = 'force-dynamic'
 
@@ -20,6 +21,12 @@ export default async function SubmitPage({
   const session = await auth()
   const params = await searchParams
   const weekId = params.week || getNextEventWeekId()
+
+  // Force logout if session has invalid user ID (old UUID format instead of Snowflake)
+  if (session && !isValidSnowflake(session.user?.id)) {
+    await signOut()
+    redirect('/submit')
+  }
 
   if (!session) {
     return (

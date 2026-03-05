@@ -1,6 +1,16 @@
 import NextAuth from 'next-auth'
 import Discord from 'next-auth/providers/discord'
 
+/**
+ * Check if a string is a valid Discord Snowflake ID
+ * Snowflakes are 17-19 digit numbers
+ */
+export function isValidSnowflake(id: string | undefined): boolean {
+  if (!id) return false
+  // Discord Snowflakes are numeric strings of 17-19 digits
+  return /^\d{17,19}$/.test(id)
+}
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
     Discord({
