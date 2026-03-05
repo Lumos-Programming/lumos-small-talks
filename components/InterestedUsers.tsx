@@ -13,12 +13,14 @@ type InterestedUsersProps = {
   eventId: string
   currentUserId?: string
   onUserInterestedChange?: (isInterested: boolean) => void
+  onLoadingChange?: (isLoading: boolean) => void
 }
 
 export function InterestedUsers({
   eventId,
   currentUserId,
   onUserInterestedChange,
+  onLoadingChange,
 }: InterestedUsersProps) {
   const [users, setUsers] = useState<InterestedUser[]>([])
   const [loading, setLoading] = useState(true)
@@ -28,6 +30,7 @@ export function InterestedUsers({
     async function fetchInterestedUsers() {
       try {
         setLoading(true)
+        onLoadingChange?.(true)
         const response = await fetch(`/api/discord/events/${eventId}/interested-users`)
         if (!response.ok) {
           throw new Error('Failed to fetch interested users')
@@ -45,11 +48,12 @@ export function InterestedUsers({
         setError('参加者情報の取得に失敗しました')
       } finally {
         setLoading(false)
+        onLoadingChange?.(false)
       }
     }
 
     fetchInterestedUsers()
-  }, [eventId, currentUserId, onUserInterestedChange])
+  }, [eventId, currentUserId, onUserInterestedChange, onLoadingChange])
 
   if (loading) {
     return (
