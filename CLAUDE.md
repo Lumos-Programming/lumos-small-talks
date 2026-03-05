@@ -19,9 +19,11 @@ Lumos Small Talks is a Lightning Talk (LT) program management application for we
 ```bash
 pnpm install         # Install dependencies
 pnpm dev            # Start development server on http://localhost:3000
-pnpm build          # Build for production
+pnpm build          # Build for production (generates version.json with commit SHA and build date)
 pnpm start          # Start production server
 pnpm lint           # Run ESLint
+pnpm format         # Format code with Prettier
+pnpm format:check   # Check code formatting
 ```
 
 ### Testing
