@@ -24,8 +24,44 @@ export default async function SubmitPage({
 
   // Force logout if session has invalid user ID (old UUID format instead of Snowflake)
   if (session && !isValidSnowflake(session.user?.id)) {
-    await signOut()
-    redirect('/submit')
+    return (
+      <main className="bg-gradient-to-br from-purple-50 via-white to-blue-50 flex items-center justify-center p-4 min-h-[80vh]">
+        <div className="bg-white rounded-3xl shadow-2xl p-12 max-w-md w-full text-center">
+          <div className="mb-8">
+            <div className="w-20 h-20 bg-orange-500 rounded-2xl mx-auto mb-4 flex items-center justify-center">
+              <span className="text-4xl">⚠️</span>
+            </div>
+            <h1 className="text-3xl font-bold mb-3">セッションの更新が必要です</h1>
+            <p className="text-muted-foreground">
+              古いセッション形式を検出しました。
+              <br />
+              再度ログインしてください。
+            </p>
+          </div>
+          <form
+            action={async () => {
+              'use server'
+              await signOut()
+            }}
+          >
+            <Button
+              size="lg"
+              className="w-full bg-orange-500 hover:bg-orange-600 text-white py-6 text-lg font-semibold"
+            >
+              ログアウトして再ログイン
+            </Button>
+          </form>
+          <div className="mt-8 pt-6 border-t">
+            <Link
+              href="/"
+              className="text-sm text-muted-foreground hover:text-purple-600 transition-colors"
+            >
+              ← 公開ページへ戻る
+            </Link>
+          </div>
+        </div>
+      </main>
+    )
   }
 
   if (!session) {
