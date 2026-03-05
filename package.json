@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "node scripts/set-version.js && next build",
     "start": "next start",
     "lint": "eslint .",
     "test": "firebase emulators:exec --only firestore \"vitest run\"",
