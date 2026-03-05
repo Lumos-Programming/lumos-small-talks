@@ -154,3 +154,68 @@ export function getDiscordEventUrl(eventId: string): string {
   const guildId = process.env.DISCORD_GUILD_ID
   return `https://discord.com/events/${guildId}/${eventId}`
 }
+
+export type DiscordEventUser = {
+  guild_scheduled_event_id: string
+  user: {
+    id: string
+    username: string
+    discriminator: string
+    avatar: string | null
+    global_name: string | null
+  }
+  member?: {
+    avatar: string | null
+    nick: string | null
+  }
+}
+
+/**
+ * Get users who marked "interested" in a Discord event
+ */
+export async function getEventInterestedUsers(eventId: string): Promise<DiscordEventUser[]> {
+  const guildId = process.env.DISCORD_GUILD_ID
+  const botToken = process.env.DISCORD_BOT_TOKEN
+
+  if (!guildId) {
+    throw new Error('DISCORD_GUILD_ID is not configured')
+  }
+  if (!botToken) {
+    throw new Error('DISCORD_BOT_TOKEN is not configured')
+  }
+
+  const response = await fetch(
+    `${DISCORD_API_BASE}/guilds/${guildId}/scheduled-events/${eventId}/users?limit=100&with_member=true`,
+    {
+      headers: {
+        Authorization: `Bot ${botToken}`,
+      },
+    }
+  )
+
+  if (!response.ok) {
+    const error = await response.text()
+    throw new Error(`Failed to get event interested users: ${response.status} ${error}`)
+  }
+
+  return response.json()
+}
+
+/**
+ * Get avatar URL for a Discord user
+ */
+export function getDiscordAvatarUrl(
+  userId: string,
+  avatarHash: string | null,
+  discriminator: string
+): string {
+  if (avatarHash) {
+    // User has custom avatar
+    const extension = avatarHash.startsWith('a_') ? 'gif' : 'png'
+    return `https://cdn.discordapp.com/avatars/${userId}/${avatarHash}.${extension}?size=128`
+  } else {
+    // Use default avatar based on discriminator
+    const defaultAvatarNumber = parseInt(discriminator) % 5
+    return `https://cdn.discordapp.com/embed/avatars/${defaultAvatarNumber}.png`
+  }
+}

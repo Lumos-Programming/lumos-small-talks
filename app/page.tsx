@@ -1,8 +1,10 @@
 import { getWeekData } from '@/lib/firebase'
 import { getNextEventWeekId, formatWeekDate, getWeekLabel } from '@/lib/utils'
+import { auth } from '@/lib/auth'
 import { LTCard } from '@/components/LTCard'
 import { WeekNavigator } from '@/components/WeekNavigator'
 import { Header } from '@/components/Header'
+import { DiscordEventSection } from '@/components/DiscordEventSection'
 import { Badge } from '@/components/ui'
 import Link from 'next/link'
 
@@ -21,6 +23,10 @@ export default async function HomePage({
 
   // Get label for the current week
   const weekLabel = getWeekLabel(weekId)
+
+  // Get current user ID if logged in
+  const session = await auth()
+  const currentUserId = session?.user?.id
 
   return (
     <main>
@@ -87,6 +93,15 @@ export default async function HomePage({
         <div className="bg-white rounded-2xl shadow-md p-2 mb-4">
           <WeekNavigator currentWeek={weekId} baseUrl="/" />
         </div>
+
+        {/* Discord Event Call to Action & Interested Users */}
+        {data.discordEventId && (
+          <DiscordEventSection
+            eventId={data.discordEventId}
+            eventUrl={data.discordEventUrl}
+            currentUserId={currentUserId}
+          />
+        )}
 
         {data.talks.length === 0 ? (
           <div className="text-center py-12 bg-white rounded-2xl border-2 border-dashed border-gray-200">
