@@ -9,6 +9,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   ],
   callbacks: {
     async session({ session, token }) {
+      // token.sub contains the Discord User ID
       if (token.sub) {
         session.user.id = token.sub
       }
@@ -17,7 +18,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       }
       return session
     },
-    async jwt({ token, account }) {
+    async jwt({ token, account, profile }) {
+      // Store Discord User ID (Snowflake) in token on first sign in
+      // account.providerAccountId contains the actual Discord User ID (Snowflake format)
+      if (account?.provider === 'discord') {
+        // Use providerAccountId which is the Discord User ID (Snowflake)
+        token.sub = account.providerAccountId
+      }
+
       // Check admin role on first sign in
       if (account?.provider === 'discord' && account.access_token) {
         const guildId = process.env.DISCORD_GUILD_ID
