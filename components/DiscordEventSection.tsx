@@ -16,14 +16,16 @@ export function DiscordEventSection({
   currentUserId,
 }: DiscordEventSectionProps) {
   const [isUserInterested, setIsUserInterested] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
 
   return (
     <div className="space-y-3 mb-4">
-      {!isUserInterested && <DiscordEventCTA eventUrl={eventUrl} />}
+      {!isLoading && !isUserInterested && <DiscordEventCTA eventUrl={eventUrl} />}
       <InterestedUsers
         eventId={eventId}
         currentUserId={currentUserId}
         onUserInterestedChange={setIsUserInterested}
+        onLoadingChange={setIsLoading}
       />
     </div>
   )
