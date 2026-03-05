@@ -37,6 +37,7 @@ export type Talk = {
   id: string
   title: string
   description: string
+  duration: number // Duration in minutes (1, 3, 5, 7, 10, 15)
   presenterUid: string
   presenterName: string
   presenterAvatar: string
@@ -110,7 +111,7 @@ export async function addTalk(
 export async function updateTalk(
   weekId: string,
   talkId: string,
-  updates: Partial<Pick<Talk, 'title' | 'description'>>,
+  updates: Partial<Pick<Talk, 'title' | 'description' | 'duration'>>,
   userId: string
 ): Promise<void> {
   const db = getDb()
