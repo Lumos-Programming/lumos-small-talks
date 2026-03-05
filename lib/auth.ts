@@ -4,7 +4,7 @@ import Discord from 'next-auth/providers/discord'
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
     Discord({
-      authorization: 'https://discord.com/api/oauth2/authorize?scope=identify+guilds',
+      authorization: 'https://discord.com/api/oauth2/authorize?scope=identify+guilds+guilds.members.read',
     }),
   ],
   callbacks: {
@@ -12,7 +12,38 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (token.sub) {
         session.user.id = token.sub
       }
+      if (token.isAdmin !== undefined) {
+        session.user.isAdmin = token.isAdmin as boolean
+      }
       return session
+    },
+    async jwt({ token, account }) {
+      // Check admin role on first sign in
+      if (account?.provider === 'discord' && account.access_token) {
+        const guildId = process.env.DISCORD_GUILD_ID
+        const adminRoleId = process.env.ADMIN_ROLE_ID
+
+        if (guildId && adminRoleId) {
+          try {
+            const res = await fetch(
+              `https://discord.com/api/users/@me/guilds/${guildId}/member`,
+              {
+                headers: {
+                  Authorization: `Bearer ${account.access_token}`,
+                },
+              }
+            )
+            const member = await res.json()
+            token.isAdmin = member.roles?.includes(adminRoleId) || false
+          } catch (e) {
+            console.error('Failed to fetch guild member info', e)
+            token.isAdmin = false
+          }
+        } else {
+          token.isAdmin = false
+        }
+      }
+      return token
     },
     async signIn({ account }) {
       if (account?.provider === 'discord') {
@@ -37,3 +68,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
   },
 })
+
+/**
+ * Check if the current user is an admin
+ */
+export async function isAdmin(): Promise<boolean> {
+  const session = await auth()
+  return session?.user?.isAdmin === true
+}
