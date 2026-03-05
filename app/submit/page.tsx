@@ -1,6 +1,7 @@
 import { auth, signIn, signOut } from '@/lib/auth'
 import { getWeekData, addTalk, updateTalk, deleteTalk } from '@/lib/firebase'
 import { getNextEventWeekId } from '@/lib/utils'
+import { createWeekEvent, syncWeekEventDescription } from '@/lib/actions/discord-events'
 import { WeekNavigator } from '@/components/WeekNavigator'
 import { ManageTalks } from '@/components/ManageTalks'
 import { Header } from '@/components/Header'
@@ -102,6 +103,27 @@ export default async function SubmitPage({
         userId
       )
     }
+
+    // Auto-sync Discord event if it exists, or create it if this is the first talk
+    const updatedData = await getWeekData(weekId)
+    if (updatedData.discordEventId) {
+      // Event exists, sync the description
+      try {
+        await syncWeekEventDescription(weekId, updatedData.discordEventId)
+      } catch (error) {
+        console.error('Failed to sync Discord event:', error)
+        // Don't fail the entire operation if Discord sync fails
+      }
+    } else if (updatedData.talks.length > 0) {
+      // No event yet, but we have talks - create the event automatically
+      try {
+        await createWeekEvent(weekId)
+      } catch (error) {
+        console.error('Failed to create Discord event:', error)
+        // Don't fail the entire operation if Discord event creation fails
+      }
+    }
+
     revalidatePath('/submit')
     revalidatePath('/')
   }
@@ -110,6 +132,18 @@ export default async function SubmitPage({
     'use server'
     const userId = session.user?.id as string
     await deleteTalk(weekId, talkId, userId)
+
+    // Auto-sync Discord event if it still exists after deletion
+    const updatedData = await getWeekData(weekId)
+    if (updatedData.discordEventId) {
+      try {
+        await syncWeekEventDescription(weekId, updatedData.discordEventId)
+      } catch (error) {
+        console.error('Failed to sync Discord event:', error)
+        // Don't fail the entire operation if Discord sync fails
+      }
+    }
+
     revalidatePath('/submit')
     revalidatePath('/')
   }

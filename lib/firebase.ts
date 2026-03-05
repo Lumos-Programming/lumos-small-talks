@@ -48,6 +48,8 @@ export type WeekData = {
   weekString: string
   eventStartTime: string
   talks: Talk[]
+  discordEventId?: string
+  discordEventUrl?: string
 }
 
 export async function getWeekData(weekId: string): Promise<WeekData> {
@@ -146,5 +148,54 @@ export async function deleteTalk(weekId: string, talkId: string, userId: string)
 
     const talks = data.talks.filter(t => t.id !== talkId)
     transaction.update(weekRef, { talks })
+  })
+}
+
+/**
+ * Save Discord event information to Firestore
+ */
+export async function saveDiscordEvent(
+  weekId: string,
+  eventId: string,
+  eventUrl: string
+): Promise<void> {
+  const db = getDb()
+  const weekRef = db.collection('weeks').doc(weekId)
+
+  await db.runTransaction(async transaction => {
+    const doc = await transaction.get(weekRef)
+
+    if (doc.exists) {
+      transaction.update(weekRef, {
+        discordEventId: eventId,
+        discordEventUrl: eventUrl,
+      })
+    } else {
+      transaction.set(weekRef, {
+        weekString: weekId,
+        eventStartTime: '21:00',
+        talks: [],
+        discordEventId: eventId,
+        discordEventUrl: eventUrl,
+      })
+    }
+  })
+}
+
+/**
+ * Remove Discord event information from Firestore
+ */
+export async function removeDiscordEvent(weekId: string): Promise<void> {
+  const db = getDb()
+  const weekRef = db.collection('weeks').doc(weekId)
+
+  await db.runTransaction(async transaction => {
+    const doc = await transaction.get(weekRef)
+    if (!doc.exists) return
+
+    transaction.update(weekRef, {
+      discordEventId: admin.firestore.FieldValue.delete(),
+      discordEventUrl: admin.firestore.FieldValue.delete(),
+    })
   })
 }
