@@ -49,6 +49,8 @@ jobs:
           tags: asia-northeast1-docker.pkg.dev/lumos-small-talks/lumos-small-talks/main:latest
           context: .
           file: ./Dockerfile
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Download Cloud Run Service YAML
         run: |
