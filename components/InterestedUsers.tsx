@@ -9,7 +9,17 @@ type InterestedUser = {
   avatarUrl: string
 }
 
-export function InterestedUsers({ eventId }: { eventId: string }) {
+type InterestedUsersProps = {
+  eventId: string
+  currentUserId?: string
+  onUserInterestedChange?: (isInterested: boolean) => void
+}
+
+export function InterestedUsers({
+  eventId,
+  currentUserId,
+  onUserInterestedChange,
+}: InterestedUsersProps) {
   const [users, setUsers] = useState<InterestedUser[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -24,6 +34,12 @@ export function InterestedUsers({ eventId }: { eventId: string }) {
         }
         const data = await response.json()
         setUsers(data.users || [])
+
+        // Notify parent if current user is interested
+        if (currentUserId && onUserInterestedChange) {
+          const isInterested = data.users.some((u: InterestedUser) => u.userId === currentUserId)
+          onUserInterestedChange(isInterested)
+        }
       } catch (err) {
         console.error('Error fetching interested users:', err)
         setError('参加者情報の取得に失敗しました')
@@ -33,7 +49,7 @@ export function InterestedUsers({ eventId }: { eventId: string }) {
     }
 
     fetchInterestedUsers()
-  }, [eventId])
+  }, [eventId, currentUserId, onUserInterestedChange])
 
   if (loading) {
     return (
@@ -49,7 +65,7 @@ export function InterestedUsers({ eventId }: { eventId: string }) {
   }
 
   if (users.length === 0) {
-    return <div className="text-sm text-muted-foreground">興味あり👀 ...まだ誰もいないみたい</div>
+    return <></>
   }
 
   return (
