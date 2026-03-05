@@ -23,7 +23,5 @@ jobs:
           node-version: 24
           cache: 'pnpm'
       - run: pnpm install
-      - name: Install Firebase Tools
-        run: npm install -g firebase-tools
       - name: Run Tests with Emulator
         run: pnpm test
