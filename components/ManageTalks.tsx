@@ -1,13 +1,13 @@
 'use client'
 
 import { useState } from 'react'
-import { Talk } from '@/lib/firebase'
+import { SerializableTalk } from '@/lib/firebase'
 import { LTCard } from '@/components/LTCard'
 import { SubmitForm } from '@/components/SubmitForm'
 
 interface ManageTalksProps {
   weekId: string
-  myTalks: Talk[]
+  myTalks: SerializableTalk[]
   onAction: (data: {
     title: string
     description: string
@@ -18,7 +18,7 @@ interface ManageTalksProps {
 }
 
 export function ManageTalks({ weekId, myTalks, onAction, onDelete }: ManageTalksProps) {
-  const [editingTalk, setEditingTalk] = useState<Talk | null>(null)
+  const [editingTalk, setEditingTalk] = useState<SerializableTalk | null>(null)
   const hasRegistered = myTalks.length >= 1
 
   return (

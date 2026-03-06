@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Button, Input, Textarea, Card, CardHeader, CardTitle, CardContent } from './ui'
-import { Talk } from '@/lib/firebase'
+import { SerializableTalk } from '@/lib/firebase'
 
 interface SubmitFormProps {
   weekId: string
@@ -12,7 +12,7 @@ interface SubmitFormProps {
     duration: number
     id?: string
   }) => Promise<void>
-  editingTalk?: Talk | null
+  editingTalk?: SerializableTalk | null
   onCancelEdit?: () => void
 }
 

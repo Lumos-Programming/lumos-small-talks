@@ -45,6 +45,10 @@ export type Talk = {
   createdAt: admin.firestore.Timestamp
 }
 
+export type SerializableTalk = Omit<Talk, 'createdAt'> & {
+  createdAt: number
+}
+
 export type WeekData = {
   weekString: string
   eventStartTime: string
@@ -53,7 +57,11 @@ export type WeekData = {
   discordEventUrl?: string
 }
 
-export async function getWeekData(weekId: string): Promise<WeekData> {
+export type SerializableWeekData = Omit<WeekData, 'talks'> & {
+  talks: SerializableTalk[]
+}
+
+export async function getWeekData(weekId: string): Promise<SerializableWeekData> {
   const doc = await getDb().collection('weeks').doc(weekId).get()
   if (!doc.exists) {
     return {
@@ -62,7 +70,14 @@ export async function getWeekData(weekId: string): Promise<WeekData> {
       talks: [],
     }
   }
-  return doc.data() as WeekData
+  const data = doc.data() as WeekData
+  return {
+    ...data,
+    talks: data.talks.map(talk => ({
+      ...talk,
+      createdAt: talk.createdAt.toMillis(),
+    })),
+  }
 }
 
 export async function addTalk(

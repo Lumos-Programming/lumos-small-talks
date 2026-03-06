@@ -13,12 +13,12 @@ import {
   getDiscordEventUrl,
 } from '@/lib/discord'
 import { formatWeekDate, getWeekDateFromWeekId } from '@/lib/utils'
-import type { WeekData } from '@/lib/firebase'
+import type { SerializableWeekData } from '@/lib/firebase'
 
 /**
  * Build event description from week data
  */
-function buildEventDescription(data: WeekData): string {
+function buildEventDescription(data: SerializableWeekData): string {
   if (data.talks.length === 0) {
     return '## 今週のLT発表予定\n\nまだ発表が登録されていません。\nぜひ登録してみましょう！\h詳細はこちらから: https://mini-lt.lumos-ynu.jp'
   }
