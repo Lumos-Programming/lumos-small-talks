@@ -1,12 +1,12 @@
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { Card, CardContent, CardHeader, CardTitle, Avatar, Badge, Button } from './ui'
-import { Talk } from '@/lib/firebase'
+import { SerializableTalk } from '@/lib/firebase'
 import { format } from 'date-fns'
 
 interface LTCardProps {
-  talk: Talk
-  onEdit?: (talk: Talk) => void
+  talk: SerializableTalk
+  onEdit?: (talk: SerializableTalk) => void
   onDelete?: (talkId: string) => void
   isOwner?: boolean
 }
@@ -58,14 +58,7 @@ export function LTCard({ talk, onEdit, onDelete, isOwner }: LTCardProps) {
       )}
       <div className="px-6 pb-3 text-xs text-muted-foreground flex items-center justify-end gap-1">
         <span className="opacity-60">📅</span>
-        {format(
-          talk.createdAt instanceof Date
-            ? talk.createdAt
-            : typeof talk.createdAt === 'object' && 'seconds' in talk.createdAt
-              ? new Date(talk.createdAt.seconds * 1000)
-              : new Date(),
-          'yyyy-MM-dd HH:mm'
-        )}
+        {format(new Date(talk.createdAt), 'yyyy-MM-dd HH:mm')}
       </div>
     </Card>
   )
