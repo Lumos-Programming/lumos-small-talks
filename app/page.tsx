@@ -6,7 +6,6 @@ import { WeekNavigator } from '@/components/WeekNavigator'
 import { Header } from '@/components/Header'
 import { DiscordEventSection } from '@/components/DiscordEventSection'
 import { Badge } from '@/components/ui'
-import Link from 'next/link'
 
 export const dynamic = 'force-dynamic'
 
@@ -81,12 +80,12 @@ export default async function HomePage({
                 <span className="bg-white px-3 py-1 rounded-full text-gray-700">⏱️ 5分でもOK</span>
                 <span className="bg-white px-3 py-1 rounded-full text-gray-700">💭 雑談ベース</span>
               </div>
-              <Link href="/submit">
+              <a href="/submit">
                 <button className="bg-gradient-to-r from-orange-500 to-yellow-500 text-white px-8 py-3 rounded-xl font-bold hover:shadow-xl transition-all hover:scale-105 flex items-center gap-2 mx-auto">
                   <span className="text-xl">🎤</span>
                   <span>気軽に発表登録してみる</span>
                 </button>
-              </Link>
+              </a>
             </div>
           </div>
         </div>
@@ -128,24 +127,24 @@ export default async function HomePage({
         )}
 
         <footer className="mt-12 text-center pb-8">
-          <Link href="/submit">
+          <a href="/submit">
             <Badge
               variant="outline"
               className="cursor-pointer hover:bg-purple-50 hover:border-purple-300 px-5 py-2 transition-all hover:scale-105"
             >
               🔐 発表登録・管理（Discordログイン）
             </Badge>
-          </Link>
+          </a>
         </footer>
       </div>
 
       {/* Floating Action Button */}
-      <Link href="/submit">
+      <a href="/submit">
         <button className="fixed bottom-8 right-8 bg-gradient-to-r from-orange-500 to-yellow-500 text-white px-6 py-4 rounded-full shadow-2xl hover:shadow-3xl transition-all hover:scale-110 z-50 animate-float group flex items-center gap-2 font-bold">
           <span className="text-2xl">➕</span>
           <span className="text-sm">発表登録</span>
         </button>
-      </Link>
+      </a>
     </main>
   )
 }
