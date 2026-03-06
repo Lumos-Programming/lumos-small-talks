@@ -80,11 +80,12 @@ export default async function HomePage({
                 <span className="bg-white px-3 py-1 rounded-full text-gray-700">⏱️ 5分でもOK</span>
                 <span className="bg-white px-3 py-1 rounded-full text-gray-700">💭 雑談ベース</span>
               </div>
-              <a href="/submit">
-                <button className="bg-gradient-to-r from-orange-500 to-yellow-500 text-white px-8 py-3 rounded-xl font-bold hover:shadow-xl transition-all hover:scale-105 flex items-center gap-2 mx-auto">
-                  <span className="text-xl">🎤</span>
-                  <span>気軽に発表登録してみる</span>
-                </button>
+              <a
+                href="/submit"
+                className="bg-gradient-to-r from-orange-500 to-yellow-500 text-white px-8 py-3 rounded-xl font-bold hover:shadow-xl transition-all hover:scale-105 flex items-center gap-2 mx-auto"
+              >
+                <span className="text-xl">🎤</span>
+                <span>気軽に発表登録してみる</span>
               </a>
             </div>
           </div>
@@ -139,11 +140,12 @@ export default async function HomePage({
       </div>
 
       {/* Floating Action Button */}
-      <a href="/submit">
-        <button className="fixed bottom-8 right-8 bg-gradient-to-r from-orange-500 to-yellow-500 text-white px-6 py-4 rounded-full shadow-2xl hover:shadow-3xl transition-all hover:scale-110 z-50 animate-float group flex items-center gap-2 font-bold">
-          <span className="text-2xl">➕</span>
-          <span className="text-sm">発表登録</span>
-        </button>
+      <a
+        href="/submit"
+        className="fixed bottom-8 right-8 bg-gradient-to-r from-orange-500 to-yellow-500 text-white px-6 py-4 rounded-full shadow-2xl hover:shadow-3xl transition-all hover:scale-110 z-50 animate-float group flex items-center gap-2 font-bold"
+      >
+        <span className="text-2xl">➕</span>
+        <span className="text-sm">発表登録</span>
       </a>
     </main>
   )
