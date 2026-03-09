@@ -1,51 +1,55 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+このファイルは、Claude Code (claude.ai/code) がこのリポジトリを操作する際のガイダンスを提供します。
 
-## Project Overview
+## プロジェクト概要
 
-Lumos Small Talks is a Lightning Talk (LT) program management application for weekly Monday 21:00 presentations. The app is built with Next.js 15 and uses:
+Lumos Small Talks は、毎週月曜日 21:00 の Lightning Talk (LT) プログラム管理アプリケーションです。Next.js 16 で構築されています。
 
-- **Frontend**: React 19, Next.js App Router, TailwindCSS
-- **Backend**: Next.js Server Actions, Firebase Admin SDK
-- **Database**: Firestore (weeks collection with embedded talks arrays)
-- **Authentication**: NextAuth v5 with Discord OAuth (guild membership verification)
-- **Testing**: Vitest with Firebase Emulator
+- **フロントエンド**: React 19, Next.js App Router, TailwindCSS
+- **バックエンド**: Next.js Server Actions, Firebase Admin SDK
+- **データベース**: Firestore (weeks コレクションに talks 配列を埋め込み)
+- **認証**: NextAuth v5 + Discord OAuth (ギルドメンバーシップ検証)
+- **テスト**: Vitest + Firebase Emulator
 
-## Commands
+## コマンド
 
-### Development
+### 前提条件
 
-```bash
-pnpm install         # Install dependencies
-pnpm dev            # Start development server on http://localhost:3000
-pnpm build          # Build for production (generates version.json with commit SHA and build date)
-pnpm start          # Start production server
-pnpm lint           # Run ESLint
-pnpm format         # Format code with Prettier
-pnpm format:check   # Check code formatting
-```
-
-### Testing
+- [aqua](https://aquaproj.github.io/) — `just` などの CLI ツールをインストール
+- Java — Firestore エミュレータの実行に必要
 
 ```bash
-pnpm test           # Run Vitest tests with Firebase emulator
-                    # Requires Java for Firebase emulator
+aqua install         # CLI ツールのインストール (just など)
+pnpm install         # Node.js パッケージのインストール
 ```
 
-**Note**: Tests automatically start the Firestore emulator on port 8080 via `firebase emulators:exec`.
-
-### Manual Emulator
+### 開発 (just 経由)
 
 ```bash
-firebase emulators:start  # Start Firebase emulators manually (port 8080)
+just dev            # 開発サーバー + Firestore エミュレータを起動（推奨）
+just test           # Firestore エミュレータでテストを実行
+just lint           # ESLint 実行
+just format         # Prettier でコード整形
+just format-check   # コード整形のチェック
+just build          # プロダクションビルド
 ```
 
-## Architecture
+`just dev` は Firestore エミュレータ (ポート 8080, UI はポート 4000) と Next.js (ポート 3000) を起動します。
 
-### Data Model
+### pnpm コマンド (直接実行)
 
-The app uses a **denormalized Firestore structure** where each week document contains an embedded array of talks:
+```bash
+pnpm dev            # Next.js のみ起動（FIRESTORE_EMULATOR_HOST の設定に従う）
+pnpm build          # プロダクションビルド（version.json にコミット SHA とビルド日時を生成）
+pnpm start          # プロダクションサーバー起動
+```
+
+## アーキテクチャ
+
+### データモデル
+
+**非正規化 Firestore 構造**を使用し、各週のドキュメントに talks 配列を埋め込んでいます。
 
 ```
 weeks/{weekId}
@@ -65,109 +69,109 @@ weeks/{weekId}
      ]
 ```
 
-Week IDs follow ISO week format: `YYYY-Www` (e.g., `2026-W09`). The `getWeekId()` utility in `lib/utils.ts` generates this using date-fns.
+Week ID は ISO 週形式: `YYYY-Www`（例: `2026-W09`）。`lib/utils.ts` の `getWeekId()` が date-fns を使って生成します。
 
-### Core Data Operations (lib/firebase.ts)
+### コアデータ操作 (lib/firebase.ts)
 
-All CRUD operations use **Firestore transactions** to prevent race conditions:
+すべての CRUD 操作は**Firestore トランザクション**を使用して競合状態を防止します:
 
-- `getWeekData(weekId)`: Fetches week document, returns empty structure if not exists
-- `addTalk(weekId, talkData, userId)`: Appends talk to array, auto-assigns order
-- `updateTalk(weekId, talkId, updates, userId)`: Updates specific talk with ownership check
-- `deleteTalk(weekId, talkId, userId)`: Removes talk with ownership check
+- `getWeekData(weekId)`: 週のドキュメントを取得。存在しない場合は空の構造を返す
+- `addTalk(weekId, talkData, userId)`: 配列に発表を追加し、order を自動付与
+- `updateTalk(weekId, talkId, updates, userId)`: 所有権チェック付きで発表を更新
+- `deleteTalk(weekId, talkId, userId)`: 所有権チェック付きで発表を削除
 
-**Important**: All mutations verify `presenterUid === userId` to enforce ownership.
+**重要**: すべての変更操作は `presenterUid === userId` を検証して所有権を確認します。
 
-**Firebase Initialization**:
+**Firebase 初期化**:
 
-- **Emulator mode**: Uses `FIRESTORE_EMULATOR_HOST` (for tests)
-- **Local development**: Uses service account key (`FIREBASE_PRIVATE_KEY` + `FIREBASE_CLIENT_EMAIL`)
-- **Cloud Run/GCE**: Uses Application Default Credentials (ADC) automatically when private key is not provided
+- **ローカル開発（デフォルト）**: `FIRESTORE_EMULATOR_HOST` 経由で Firestore エミュレータを使用（`just dev` で自動起動）
+- **本番 Firestore（任意）**: サービスアカウントキー (`FIREBASE_PRIVATE_KEY` + `FIREBASE_CLIENT_EMAIL`) を使用 — `.env` の `FIRESTORE_EMULATOR_HOST` をコメントアウト
+- **Cloud Run/GCE**: `FIREBASE_PRIVATE_KEY` 未設定時は Application Default Credentials (ADC) を自動使用
 
-### Authentication Flow (lib/auth.ts)
+### 認証フロー (lib/auth.ts)
 
-NextAuth is configured with Discord provider and custom callbacks:
+NextAuth は Discord プロバイダーとカスタムコールバックで構成:
 
-1. User signs in with Discord OAuth (scopes: `identify` + `guilds`)
-2. `signIn` callback fetches user's guild memberships via Discord API
-3. Access is granted only if user is member of `DISCORD_GUILD_ID`
-4. `session` callback adds user ID to session for ownership checks
+1. Discord OAuth でサインイン（スコープ: `identify` + `guilds`）
+2. `signIn` コールバックが Discord API でギルドメンバーシップを取得
+3. `DISCORD_GUILD_ID` のメンバーのみアクセスを許可
+4. `session` コールバックがユーザー ID をセッションに追加（所有権チェック用）
 
-Environment variables required:
+必要な環境変数:
 
 - `AUTH_SECRET`, `AUTH_DISCORD_ID`, `AUTH_DISCORD_SECRET`
-- `DISCORD_GUILD_ID` (optional, bypasses guild check if not set)
-- `FIREBASE_PROJECT_ID` (always required)
-- `FIREBASE_CLIENT_EMAIL`, `FIREBASE_PRIVATE_KEY` (only for local development; omit on Cloud Run to use ADC)
+- `DISCORD_GUILD_ID`（未設定時はギルドチェックをスキップ）
+- `FIREBASE_PROJECT_ID`（常に必要）
+- `FIREBASE_CLIENT_EMAIL`, `FIREBASE_PRIVATE_KEY`（ローカルで本番 Firestore に接続する場合のみ; Cloud Run では不要）
 
-### Page Structure
+### ページ構成
 
-**Public Page (`app/page.tsx`)**:
+**公開ページ (`app/page.tsx`)**:
 
-- Displays all talks for a given week (sorted by `order`)
-- No authentication required
-- Uses `?week=2026-W09` query param for navigation
-- Server-side rendered with `getWeekData()`
+- 指定された週のすべての発表を表示（`order` 順）
+- 認証不要
+- `?week=2026-W09` クエリパラメータで週を切り替え
+- `getWeekData()` によるサーバーサイドレンダリング
 
-**Submit/Manage Page (`app/submit/page.tsx`)**:
+**投稿/管理ページ (`app/submit/page.tsx`)**:
 
-- Requires Discord authentication
-- Shows only user's own talks for selected week
-- Uses Server Actions for add/update/delete operations
-- Calls `revalidatePath()` to refresh both `/submit` and `/` after mutations
+- Discord 認証が必要
+- 選択した週のユーザー自身の発表のみ表示
+- Server Actions による追加/更新/削除
+- 変更後に `revalidatePath()` で `/submit` と `/` を更新
 
-**Key Pattern**: Both pages use `WeekNavigator` component for week-based navigation.
+**パターン**: 両ページは `WeekNavigator` コンポーネントで週ナビゲーションを行います。
 
-### Component Architecture
+### コンポーネント構成
 
-- **LTCard**: Displays individual talk with markdown support (react-markdown + remark-gfm)
-  - Shows edit/delete buttons only when `isOwner={true}`
-- **SubmitForm**: Handles both create and edit modes
-  - Controlled form with title + markdown description
-  - Uses `editingTalk` prop to switch between modes
-- **ManageTalks**: Container for user's talks list + submit form
-  - Manages `editingTalk` state for inline editing
-- **WeekNavigator**: Prev/next week navigation using `getRelativeWeekId()`
+- **LTCard**: 個別の発表を表示（react-markdown + remark-gfm でMarkdown対応）
+  - `isOwner={true}` の場合のみ編集/削除ボタンを表示
+- **SubmitForm**: 新規作成と編集モードを処理
+  - タイトル + Markdown 説明のフォーム
+  - `editingTalk` prop でモード切替
+- **ManageTalks**: ユーザーの発表一覧 + 投稿フォームのコンテナ
+  - `editingTalk` 状態でインライン編集を管理
+- **WeekNavigator**: `getRelativeWeekId()` を使った前後の週ナビゲーション
 
-### UI Components (`components/ui/index.tsx`)
+### UI コンポーネント (`components/ui/index.tsx`)
 
-Centralized exports for shadcn-style components:
+shadcn スタイルのコンポーネントを一括エクスポート:
 
 - Badge, Button, Card (CardHeader, CardTitle, CardContent)
 - Input, Textarea
-- All use `class-variance-authority` for variants
+- すべて `class-variance-authority` でバリアント管理
 
-Use the `cn()` utility from `lib/utils.ts` for className merging.
+クラス名のマージには `lib/utils.ts` の `cn()` ユーティリティを使用。
 
-## Testing Strategy
+## テスト戦略
 
-Tests are in `lib/firebase.test.ts` and use:
+テストは `lib/firebase.test.ts` にあり、以下を使用:
 
 - Firebase Rules Unit Testing SDK (`@firebase/rules-unit-testing`)
-- Firestore emulator (auto-started by `vitest.config.ts` setup)
-- Test isolation: Each test clears emulator data
+- Firestore エミュレータ（`vitest.config.ts` のセットアップで自動起動）
+- テスト分離: 各テストでエミュレータのデータをクリア
 
-When writing tests:
+テスト作成時:
 
-1. Initialize test Firestore with `initializeTestEnvironment()`
-2. Use `testEnv.authenticatedContext(userId)` for auth simulation
-3. Test transaction behavior (concurrent adds, ownership checks)
+1. `initializeTestEnvironment()` でテスト用 Firestore を初期化
+2. `testEnv.authenticatedContext(userId)` で認証をシミュレーション
+3. トランザクション動作をテスト（並行追加、所有権チェック）
 
-## Deployment
+## デプロイ
 
-This app is designed for **Google Cloud Run** deployment:
+**Google Cloud Run** へのデプロイ用に設計されています:
 
-1. Enable Firestore in Native Mode
-2. Create service account with `Cloud Datastore User` role
-3. Set environment variables in Cloud Run
-4. Build Docker image and deploy
+1. Firestore をネイティブモードで有効化
+2. `Cloud Datastore User` ロールを持つサービスアカウントを作成
+3. Cloud Run に環境変数を設定
+4. Docker イメージをビルドしてデプロイ
 
-See README.md for detailed gcloud commands.
+詳細な gcloud コマンドは README.md を参照。
 
-## Key Conventions
+## 主要な規約
 
-- **Week IDs**: Always use `getWeekId()` or `getRelativeWeekId(offset)` from `lib/utils.ts`
-- **Ownership**: All mutations in `lib/firebase.ts` enforce `presenterUid` checks
-- **Revalidation**: After any data mutation, call `revalidatePath('/submit')` and `revalidatePath('/')`
-- **Markdown**: Talk descriptions support GitHub Flavored Markdown via react-markdown
-- **Transactions**: Always use Firestore transactions for array mutations to prevent race conditions
+- **Week ID**: 常に `lib/utils.ts` の `getWeekId()` または `getRelativeWeekId(offset)` を使用
+- **所有権**: `lib/firebase.ts` のすべての変更操作で `presenterUid` チェックを実施
+- **再検証**: データ変更後は `revalidatePath('/submit')` と `revalidatePath('/')` を呼び出す
+- **Markdown**: 発表の説明は react-markdown で GitHub Flavored Markdown をサポート
+- **トランザクション**: 配列の変更は常に Firestore トランザクションを使用して競合状態を防止

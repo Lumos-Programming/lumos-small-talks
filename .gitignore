@@ -43,3 +43,5 @@ next-env.d.ts
 
 # build version info (generated at build time)
 /lib/version.json
+
+firestore-debug.log
