@@ -12,8 +12,8 @@ export function getWeekId(date: Date = new Date()): string {
   return format(date, "RRRR-'W'II")
 }
 
-export function getRelativeWeekId(offset: number): string {
-  const date = addWeeks(new Date(), offset)
+export function getRelativeWeekId(offset: number, from: Date = new Date()): string {
+  const date = addWeeks(from, offset)
   return getWeekId(date)
 }
 
@@ -71,18 +71,18 @@ export function getNavigationWeeks(
   if (duringEvent) {
     // During event: prev=last week, center=this week (ongoing), next=next week
     return {
-      prevWeek: getRelativeWeekId(-1),
-      centerWeek: getRelativeWeekId(0),
-      nextWeek: getRelativeWeekId(1),
+      prevWeek: getRelativeWeekId(-1, now),
+      centerWeek: getRelativeWeekId(0, now),
+      nextWeek: getRelativeWeekId(1, now),
       centerLabel: '今回',
       rightLabel: '次回',
     }
   } else {
     // Not during event: prev=this week (finished), center=next week, next=week after
     return {
-      prevWeek: getRelativeWeekId(0),
-      centerWeek: getRelativeWeekId(1),
-      nextWeek: getRelativeWeekId(2),
+      prevWeek: getRelativeWeekId(0, now),
+      centerWeek: getRelativeWeekId(1, now),
+      nextWeek: getRelativeWeekId(2, now),
       centerLabel: '次回',
       rightLabel: '次々回',
     }
@@ -96,7 +96,7 @@ export function getNextEventWeekId(
 ): string {
   const duringEvent = isDuringEvent(now, config)
   // During event: this week, otherwise: next week
-  return duringEvent ? getWeekId(now) : getRelativeWeekId(1)
+  return duringEvent ? getWeekId(now) : getRelativeWeekId(1, now)
 }
 
 // Get label for a specific week ID
