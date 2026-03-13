@@ -1,15 +1,15 @@
-import { auth, signIn, signOut, isValidSnowflake } from '@/lib/auth'
+import { auth, signOut, isValidSnowflake } from '@/lib/auth'
 import { getWeekData, addTalk, updateTalk, deleteTalk } from '@/lib/firebase'
 import { getNextEventWeekId } from '@/lib/utils'
 import { createWeekEvent, syncWeekEventDescription } from '@/lib/actions/discord-events'
 import { WeekNavigator } from '@/components/WeekNavigator'
 import { ManageTalks } from '@/components/ManageTalks'
 import { Header } from '@/components/Header'
+import { DiscordLoginButton } from '@/components/DiscordLoginButton'
 import { Button } from '@/components/ui'
 import { revalidatePath } from 'next/cache'
 import Link from 'next/link'
 import Image from 'next/image'
-import { redirect } from 'next/navigation'
 
 export const dynamic = 'force-dynamic'
 
@@ -79,20 +79,7 @@ export default async function SubmitPage({
               ログインが必要です
             </p>
           </div>
-          <form
-            action={async () => {
-              'use server'
-              await signIn('discord')
-            }}
-          >
-            <Button
-              size="lg"
-              className="w-full bg-[#5865F2] hover:bg-[#4752C4] text-white py-6 text-lg font-semibold"
-            >
-              <span className="mr-2">💬</span>
-              Discordでログイン
-            </Button>
-          </form>
+          <DiscordLoginButton />
           <div className="mt-8 pt-6 border-t">
             <Link
               href="/"
