@@ -84,7 +84,7 @@ export default async function AdminPage({
           </div>
 
           <div className="bg-white rounded-2xl shadow-xl p-6 mb-8">
-            <WeekNavigator currentWeek={weekId} baseUrl="/admin" />
+            <WeekNavigator currentWeek={weekId} baseUrl="/admin" showSendButton />
           </div>
 
           <Card className="mb-8">

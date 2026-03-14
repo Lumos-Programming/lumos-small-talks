@@ -1,13 +1,15 @@
 import { Button } from './ui'
 import Link from 'next/link'
 import { getNavigationWeeks, formatWeekDate } from '@/lib/utils'
+import { sendLineNextEvent } from '@/lib/actions/line'
 
 interface WeekNavigatorProps {
   currentWeek: string
   baseUrl: string
+  showSendButton?: boolean
 }
 
-export function WeekNavigator({ currentWeek, baseUrl }: WeekNavigatorProps) {
+export function WeekNavigator({ currentWeek, baseUrl, showSendButton = false }: WeekNavigatorProps) {
   // Get navigation weeks and labels
   const { prevWeek, centerWeek, nextWeek, centerLabel, rightLabel } = getNavigationWeeks()
 
@@ -56,6 +58,13 @@ export function WeekNavigator({ currentWeek, baseUrl }: WeekNavigatorProps) {
           <span className="text-xs font-normal opacity-70">{nextDate}</span>
         </Button>
       </Link>
+      {showSendButton && (
+        <form action={sendLineNextEvent} className="ml-2">
+          <Button type="submit" variant="outline" className="text-green-600">
+            📤 送信
+          </Button>
+        </form>
+      )}
     </div>
   )
 }
