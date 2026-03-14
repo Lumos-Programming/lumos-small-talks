@@ -3,6 +3,7 @@ import { getWeekData } from '@/lib/firebase'
 
 export type LineFlexBubble = {
   type: 'bubble'
+  hero?: Record<string, unknown>
   header?: Record<string, unknown>
   body?: Record<string, unknown>
   footer?: Record<string, unknown>
@@ -21,24 +22,38 @@ export function buildNextEventFlexMessage(weekId: string, weekData: Awaited<Retu
     .sort((a, b) => a.order - b.order)
     .map((talk, i) => ({
       type: 'box',
-      layout: 'baseline',
+      layout: 'horizontal',
       spacing: 'sm',
       contents: [
         {
-          type: 'text',
-          text: `${i + 1}.`,
-          size: 'sm',
-          color: '#555555',
-          flex: 0,
+          type: 'image',
+          url: talk.presenterAvatar || 'https://mini-lt.lumos-ynu.jp/images/miniLT.jpg',
+          size: 'xxs',
+          aspectRatio: '1:1',
+          aspectMode: 'cover',
+          gravity: 'center',
         },
         {
-          type: 'text',
-          text: talk.title,
-          size: 'sm',
-          color: '#262626',
-          weight: 'bold',
-          wrap: true,
-          flex: 5,
+          type: 'box',
+          layout: 'vertical',
+          contents: [
+            {
+              type: 'text',
+              text: talk.presenterName,
+              size: 'xs',
+              color: '#555555',
+              weight: 'bold',
+              wrap: true,
+            },
+            {
+              type: 'text',
+              text: `${i + 1}. ${talk.title}`,
+              size: 'sm',
+              color: '#262626',
+              wrap: true,
+            },
+          ],
+          flex: 1,
         },
       ],
     }))
@@ -55,24 +70,19 @@ export function buildNextEventFlexMessage(weekId: string, weekData: Awaited<Retu
         },
       ]
 
+  const eventUrl = weekData.discordEventUrl || 'https://mini-lt.lumos-ynu.jp'
+
   return {
     type: 'flex',
     altText: `Lumos Mini LT ${dateText} 更新情報`,
     contents: {
       type: 'bubble',
-      header: {
-        type: 'box',
-        layout: 'vertical',
-        contents: [
-          {
-            type: 'text',
-            text: `次回イベント (${dateText})`,
-            weight: 'bold',
-            size: 'lg',
-            color: '#1f2937',
-            wrap: true,
-          },
-        ],
+      hero: {
+        type: 'image',
+        url: 'https://mini-lt.lumos-ynu.jp/images/miniLT.jpg',
+        size: 'full',
+        aspectRatio: '20:13',
+        aspectMode: 'cover',
       },
       body: {
         type: 'box',
@@ -81,32 +91,60 @@ export function buildNextEventFlexMessage(weekId: string, weekData: Awaited<Retu
         contents: [
           {
             type: 'text',
-            text: '今週のLT予定',
+            text: `${dateText}のminiLT予定`,
             weight: 'bold',
             size: 'md',
             color: '#1f2937',
+            wrap: true,
           },
           ...talkBody,
           {
             type: 'text',
-            text: '詳細・参加登録: https://mini-lt.lumos-ynu.jp',
+            text: '「聞いてみたい！」という方は気軽に「興味あり」をタップ',
+            size: 'sm',
+            color: '#666666',
+            wrap: true,
+            margin: 'md',
+          },
+          {
+            type: 'separator',
+            margin: 'md',
+          },
+          {
+            type: 'text',
+            text: '詳細はこちら：',
             size: 'xs',
             color: '#999999',
             wrap: true,
-            margin: 'md',
+          },
+          {
+            type: 'text',
+            text: 'https://mini-lt.lumos-ynu.jp',
+            size: 'xs',
+            color: '#0000EE',
+            wrap: true,
+            action: {
+              type: 'uri',
+              label: '詳細はこちら',
+              uri: 'https://mini-lt.lumos-ynu.jp',
+            },
           },
         ],
       },
       footer: {
         type: 'box',
         layout: 'vertical',
+        spacing: 'sm',
         contents: [
           {
-            type: 'text',
-            text: '※ 週次の予定はサイトの登録情報に基づきます',
-            size: 'xs',
-            color: '#aaaaaa',
-            wrap: true,
+            type: 'button',
+            style: 'primary',
+            color: '#0077CC',
+            action: {
+              type: 'uri',
+              label: '興味あり',
+              uri: eventUrl,
+            },
           },
         ],
       },
