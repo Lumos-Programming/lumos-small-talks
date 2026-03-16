@@ -48,11 +48,22 @@ export const EVENT_CONFIG: EventConfig = {
   endHour: 24, // 24:00 (midnight, exclusive)
 }
 
-// Check if currently during event time
-export function isDuringEvent(now: Date = new Date(), config: EventConfig = EVENT_CONFIG): boolean {
-  const dayOfWeek = now.getDay()
-  const hour = now.getHours()
-  return dayOfWeek === config.dayOfWeek && hour >= config.startHour && hour < config.endHour
+export enum EventState {
+  Upcoming = 'upcoming',
+  Ongoing = 'ongoing',
+  Past = 'past',
+}
+
+export function getThisWeekEventState(
+  now: Date = new Date(),
+  config: EventConfig = EVENT_CONFIG
+): EventState {
+  if (config.dayOfWeek > now.getDay()) return EventState.Upcoming
+  if (config.dayOfWeek === now.getDay())
+    return now.getHours() >= config.startHour && now.getHours() < config.endHour
+      ? EventState.Ongoing
+      : EventState.Upcoming
+  return EventState.Past
 }
 
 // Get week IDs for navigation (prev, center, next)
@@ -66,26 +77,33 @@ export function getNavigationWeeks(
   centerLabel: '今回' | '次回'
   rightLabel: '次回' | '次々回'
 } {
-  const duringEvent = isDuringEvent(now, config)
+  const eventState = getThisWeekEventState(now, config)
 
-  if (duringEvent) {
-    // During event: prev=last week, center=this week (ongoing), next=next week
-    return {
-      prevWeek: getRelativeWeekId(-1, now),
-      centerWeek: getRelativeWeekId(0, now),
-      nextWeek: getRelativeWeekId(1, now),
-      centerLabel: '今回',
-      rightLabel: '次回',
-    }
-  } else {
-    // Not during event: prev=this week (finished), center=next week, next=week after
-    return {
-      prevWeek: getRelativeWeekId(0, now),
-      centerWeek: getRelativeWeekId(1, now),
-      nextWeek: getRelativeWeekId(2, now),
-      centerLabel: '次回',
-      rightLabel: '次々回',
-    }
+  switch (eventState) {
+    case EventState.Upcoming:
+      return {
+        prevWeek: getRelativeWeekId(-1, now),
+        centerWeek: getRelativeWeekId(0, now),
+        nextWeek: getRelativeWeekId(1, now),
+        centerLabel: '次回',
+        rightLabel: '次々回',
+      }
+    case EventState.Ongoing:
+      return {
+        prevWeek: getRelativeWeekId(-1, now),
+        centerWeek: getRelativeWeekId(0, now),
+        nextWeek: getRelativeWeekId(1, now),
+        centerLabel: '今回',
+        rightLabel: '次回',
+      }
+    case EventState.Past:
+      return {
+        prevWeek: getRelativeWeekId(0, now),
+        centerWeek: getRelativeWeekId(1, now),
+        nextWeek: getRelativeWeekId(2, now),
+        centerLabel: '次回',
+        rightLabel: '次々回',
+      }
   }
 }
 
@@ -94,9 +112,15 @@ export function getNextEventWeekId(
   now: Date = new Date(),
   config: EventConfig = EVENT_CONFIG
 ): string {
-  const duringEvent = isDuringEvent(now, config)
-  // During event: this week, otherwise: next week
-  return duringEvent ? getWeekId(now) : getRelativeWeekId(1, now)
+  const eventState = getThisWeekEventState(now, config)
+  switch (eventState) {
+    case EventState.Upcoming:
+      return getWeekId(now)
+    case EventState.Ongoing:
+      return getWeekId(now)
+    case EventState.Past:
+      return getRelativeWeekId(1, now)
+  }
 }
 
 // Get label for a specific week ID
