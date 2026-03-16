@@ -1,5 +1,6 @@
 import { formatWeekDate } from '@/lib/utils'
 import { getWeekData } from '@/lib/firebase'
+import { Alice, Alike_Angular } from 'next/font/google'
 
 export type LineFlexBubble = {
   type: 'bubble'
@@ -23,38 +24,57 @@ export function buildNextEventFlexMessage(weekId: string, weekData: Awaited<Retu
     .map((talk, i) => ({
       type: 'box',
       layout: 'horizontal',
-      spacing: 'sm',
+      spacing: 'md',
       contents: [
-        {
-          type: 'image',
-          url: talk.presenterAvatar || 'https://mini-lt.lumos-ynu.jp/images/miniLT.jpg',
-          size: 'xxs',
-          aspectRatio: '1:1',
-          aspectMode: 'cover',
-          gravity: 'center',
-        },
         {
           type: 'box',
           layout: 'vertical',
+          flex: 1,
           contents: [
             {
-              type: 'text',
-              text: talk.presenterName,
-              size: 'xs',
-              color: '#555555',
-              weight: 'bold',
-              wrap: true,
+              type: 'image',
+              url: talk.presenterAvatar || 'https://mini-lt.lumos-ynu.jp/images/miniLT.jpg',
+              size: '30px',
+              align: 'center',
             },
             {
-              type: 'text',
-              text: `${i + 1}. ${talk.title}`,
-              size: 'sm',
-              color: '#262626',
-              wrap: true,
+              type: 'box',
+              layout: 'vertical',
+              justifyContent: 'center',
+              alignItems: 'center',
+              paddingTop: '5px',
+              paddingBottom: '5px',
+              paddingStart: '5px',
+              paddingEnd: '5px',
+              background: {
+                type: 'linearGradient',
+                angle: '135deg',
+                startColor: '#6778df',
+                endColor: '#7354ae',
+              },
+              contents: [
+                {
+                  type: 'text',
+                  text: talk.presenterName,
+                  size: '15px',
+                  color: '#ffffff',
+                  align: 'center',
+                  wrap: true,
+                }
+              ],
             },
           ],
-          flex: 1,
         },
+        {
+          type: 'text',
+          text: `${talk.title}`,
+          flex: 2,
+          size: 'md',
+          color: '#262626',
+          weight: 'bold',
+          wrap: true,
+        },
+        
       ],
     }))
 
@@ -77,58 +97,52 @@ export function buildNextEventFlexMessage(weekId: string, weekData: Awaited<Retu
     altText: `Lumos Mini LT ${dateText} 更新情報`,
     contents: {
       type: 'bubble',
-      hero: {
-        type: 'image',
-        url: 'https://mini-lt.lumos-ynu.jp/images/miniLT.jpg',
-        size: 'full',
-        aspectRatio: '20:13',
-        aspectMode: 'cover',
+      header: {
+        type: 'box',
+        layout: 'vertical',
+        paddingAll: '20px',
+        contents: [
+          {
+            type: 'box',
+            layout: 'horizontal',
+            justifyContent: 'center',
+            paddingAll: '18px',
+            contents: [
+              {
+                type: 'text',
+                text: 'Lumos Mini LT',
+                weight: 'bold',
+                size: 'xxl',
+                color: '#ffffff',
+                align: 'center',
+                wrap: true,
+              }
+            ]
+          }
+       ],
+       background: {
+          type: 'linearGradient',
+          angle: '135deg',
+          startColor: '#6778df',
+          endColor: '#7354ae',
+        }
       },
       body: {
         type: 'box',
         layout: 'vertical',
         spacing: 'sm',
+        paddingAll: '20px',
         contents: [
           {
             type: 'text',
             text: `${dateText}のminiLT予定`,
             weight: 'bold',
-            size: 'md',
+            size: 'lg',
             color: '#1f2937',
+            offsetBottom: '10px',
             wrap: true,
           },
           ...talkBody,
-          {
-            type: 'text',
-            text: '「聞いてみたい！」という方は気軽に「興味あり」をタップ',
-            size: 'sm',
-            color: '#666666',
-            wrap: true,
-            margin: 'md',
-          },
-          {
-            type: 'separator',
-            margin: 'md',
-          },
-          {
-            type: 'text',
-            text: '詳細はこちら：',
-            size: 'xs',
-            color: '#999999',
-            wrap: true,
-          },
-          {
-            type: 'text',
-            text: 'https://mini-lt.lumos-ynu.jp',
-            size: 'xs',
-            color: '#0000EE',
-            wrap: true,
-            action: {
-              type: 'uri',
-              label: '詳細はこちら',
-              uri: 'https://mini-lt.lumos-ynu.jp',
-            },
-          },
         ],
       },
       footer: {
@@ -138,15 +152,21 @@ export function buildNextEventFlexMessage(weekId: string, weekData: Awaited<Retu
         contents: [
           {
             type: 'button',
-            style: 'primary',
-            color: '#0077CC',
+            style: 'link',
+            color: '#ffffff',
             action: {
               type: 'uri',
-              label: '興味あり',
+              label: '発表内容を詳しくみる',
               uri: eventUrl,
             },
           },
         ],
+        background: {
+          type: 'linearGradient',
+          angle: '135deg',
+          startColor: '#f87515',
+          endColor: '#eab108',
+        }
       },
     },
   }
