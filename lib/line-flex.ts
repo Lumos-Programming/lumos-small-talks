@@ -1,6 +1,8 @@
 import { formatWeekDate } from '@/lib/utils'
 import { getWeekData } from '@/lib/firebase'
-import { Alice, Alike_Angular } from 'next/font/google'
+import { Alice, Alike_Angular, Margarine } from 'next/font/google'
+import { off } from 'process'
+import { a } from 'vitest/dist/chunks/suite.d.FvehnV49.js'
 
 export type LineFlexBubble = {
   type: 'bubble'
@@ -18,6 +20,7 @@ export type LineFlexMessage = {
 
 export function buildNextEventFlexMessage(weekId: string, weekData: Awaited<ReturnType<typeof getWeekData>>): LineFlexMessage {
   const dateText = formatWeekDate(weekId)
+  const timeText = weekData.eventStartTime || '21:00'
 
   const talks = weekData.talks
     .sort((a, b) => a.order - b.order)
@@ -25,17 +28,34 @@ export function buildNextEventFlexMessage(weekId: string, weekData: Awaited<Retu
       type: 'box',
       layout: 'horizontal',
       spacing: 'md',
+      margin: 'xl',
+      justifyContent: 'center',
+      alignItems: 'center',
       contents: [
         {
           type: 'box',
           layout: 'vertical',
           flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          spacing: 'sm',
           contents: [
             {
-              type: 'image',
-              url: talk.presenterAvatar || 'https://mini-lt.lumos-ynu.jp/images/miniLT.jpg',
-              size: '30px',
-              align: 'center',
+              type: 'box',
+              layout: 'horizontal',
+              width: '35px',
+              height: '35px',
+              cornerRadius: 'xxl',
+              contents: [
+                  {
+                    type: 'image',
+                    url: talk.presenterAvatar || 'https://mini-lt.lumos-ynu.jp/images/miniLT.jpg',
+                    size: 'full',
+                    aspectMode: 'cover',
+                    aspectRatio: '1:1',
+                    gravity: 'center',
+                  }
+              ],
             },
             {
               type: 'box',
@@ -44,8 +64,9 @@ export function buildNextEventFlexMessage(weekId: string, weekData: Awaited<Retu
               alignItems: 'center',
               paddingTop: '5px',
               paddingBottom: '5px',
-              paddingStart: '5px',
-              paddingEnd: '5px',
+              paddingStart: '15px',
+              paddingEnd: '15px',
+              cornerRadius: 'xl',
               background: {
                 type: 'linearGradient',
                 angle: '135deg',
@@ -56,9 +77,10 @@ export function buildNextEventFlexMessage(weekId: string, weekData: Awaited<Retu
                 {
                   type: 'text',
                   text: talk.presenterName,
-                  size: '15px',
+                  size: '13px',
                   color: '#ffffff',
                   align: 'center',
+                  weight: 'bold',
                   wrap: true,
                 }
               ],
@@ -67,7 +89,7 @@ export function buildNextEventFlexMessage(weekId: string, weekData: Awaited<Retu
         },
         {
           type: 'text',
-          text: `${talk.title}`,
+          text: `${i + 1}. ${talk.title}`,
           flex: 2,
           size: 'md',
           color: '#262626',
@@ -94,7 +116,7 @@ export function buildNextEventFlexMessage(weekId: string, weekData: Awaited<Retu
 
   return {
     type: 'flex',
-    altText: `Lumos Mini LT ${dateText} 更新情報`,
+    altText: `Lumos Mini LT ${dateText} ${timeText} 更新情報`,
     contents: {
       type: 'bubble',
       header: {
@@ -135,11 +157,19 @@ export function buildNextEventFlexMessage(weekId: string, weekData: Awaited<Retu
         contents: [
           {
             type: 'text',
-            text: `${dateText}のminiLT予定`,
+            text: `${dateText} ${timeText}~`,
             weight: 'bold',
             size: 'lg',
             color: '#1f2937',
-            offsetBottom: '10px',
+            align: 'center',
+            wrap: true,
+          },
+          {
+            type: 'text',
+            text: '@ Discord mini-lt ボイスチャンネル',
+            size: 'xs',
+            color: '#535353',
+            align: 'center',
             wrap: true,
           },
           ...talkBody,
@@ -148,25 +178,54 @@ export function buildNextEventFlexMessage(weekId: string, weekData: Awaited<Retu
       footer: {
         type: 'box',
         layout: 'vertical',
-        spacing: 'sm',
+        paddingTop: '0px',
+        paddingBottom: '20px',
+        paddingStart: '20px',
+        paddingEnd: '20px',
+        spacing: 'xs',
         contents: [
           {
-            type: 'button',
-            style: 'link',
-            color: '#ffffff',
-            action: {
-              type: 'uri',
-              label: '発表内容を詳しくみる',
-              uri: eventUrl,
-            },
+            type: 'text',
+            text: '発表登録・参加登録お待ちしています！',
+            size: 'xs',
+            color: '#535353',
+            align: 'center',
+            wrap: true,
+          },
+          {
+            type: 'text',
+            text: 'はじめての人や聞き専も大歓迎！！',
+            size: 'xs',
+            color: '#535353',
+            align: 'center',
+            wrap: true,
+          },
+          {
+            type: 'box',
+            layout: 'vertical',
+            justifyContent: 'center',
+            cornerRadius: 'md',
+            margin: 'sm',
+            background: {
+            type: 'linearGradient',
+            angle: '135deg',
+            startColor: '#f87515',
+            endColor: '#eab108',
+          },
+            contents: [
+              {
+                type: 'button',
+                style: 'link',
+                color: '#ffffff',
+                action: {
+                  type: 'uri',
+                  label: '発表内容を詳しくみる',
+                  uri: eventUrl,
+                },
+              },
+            ]
           },
         ],
-        background: {
-          type: 'linearGradient',
-          angle: '135deg',
-          startColor: '#f87515',
-          endColor: '#eab108',
-        }
       },
     },
   }
