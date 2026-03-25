@@ -1,0 +1,188 @@
+{
+  "type": "bubble",
+  "header": {
+    "type": "box",
+    "layout": "vertical",
+    "contents": [
+      {
+        "type": "box",
+        "layout": "horizontal",
+        "justifyContent": "center",
+        "contents": [
+          {
+            "type": "text",
+            "text": "Lumos Mini LT",
+            "weight": "bold",
+            "size": "xxl",
+            "color": "#ffffff",
+            "align": "center",
+            "wrap": true
+          }
+        ]
+      }
+    ],
+    "background": {
+      "type": "linearGradient",
+      "angle": "135deg",
+      "startColor": "#6778df",
+      "endColor": "#7354ae"
+    }
+  },
+  "body": {
+    "type": "box",
+    "layout": "vertical",
+    "spacing": "sm",
+    "paddingAll": "20px",
+    "contents": [
+      {
+        "type": "text",
+        "text": "2月23日(月) 21:00~",
+        "weight": "bold",
+        "size": "lg",
+        "color": "#1f2937",
+        "align": "center",
+        "wrap": true
+      },
+      {
+        "type": "text",
+        "text": "@ Discord mini-lt ボイスチャンネル",
+        "size": "xs",
+        "color": "#535353",
+        "align": "center",
+        "wrap": true
+      },
+      {
+        "type": "text",
+        "text": "現在のLT一覧",
+        "size": "lg",
+        "color": "#1f2937",
+        "align": "center",
+        "weight": "bold",
+        "margin": "md",
+        "wrap": true
+      },
+      {
+        "type": "box",
+        "layout": "horizontal",
+        "spacing": "md",
+        "margin": "md",
+        "justifyContent": "center",
+        "alignItems": "center",
+        "contents": [
+          {
+            "type": "box",
+            "layout": "horizontal",
+            "width": "20px",
+            "height": "20px",
+            "cornerRadius": "xxl",
+            "contents": [
+              {
+                "type": "image",
+                "url": "https://mini-lt.lumos-ynu.jp/images/icon_sample_01.jpg",
+                "size": "full",
+                "aspectMode": "cover",
+                "aspectRatio": "1:1",
+                "gravity": "center"
+              }
+            ]
+          },
+          {
+            "type": "text",
+            "text": "サンプル発表1",
+            "size": "md",
+            "color": "#262626",
+            "weight": "bold",
+            "wrap": true
+          }
+        ]
+      },
+      {
+        "type": "box",
+        "layout": "horizontal",
+        "spacing": "md",
+        "margin": "md",
+        "justifyContent": "center",
+        "alignItems": "center",
+        "contents": [
+          {
+            "type": "box",
+            "layout": "horizontal",
+            "width": "20px",
+            "height": "20px",
+            "cornerRadius": "xxl",
+            "contents": [
+              {
+                "type": "image",
+                "url": "https://mini-lt.lumos-ynu.jp/images/icon_sample_02.jpg",
+                "size": "full",
+                "aspectMode": "cover",
+                "aspectRatio": "1:1",
+                "gravity": "center"
+              }
+            ]
+          },
+          {
+            "type": "text",
+            "text": "サンプル発表2",
+            "size": "md",
+            "color": "#262626",
+            "weight": "bold",
+            "wrap": true
+          }
+        ]
+      }
+    ]
+  },
+  "footer": {
+    "type": "box",
+    "layout": "vertical",
+    "paddingTop": "0px",
+    "paddingBottom": "20px",
+    "paddingStart": "20px",
+    "paddingEnd": "20px",
+    "spacing": "xs",
+    "contents": [
+      {
+        "type": "text",
+        "text": "発表登録・参加登録お待ちしています！",
+        "size": "xs",
+        "color": "#535353",
+        "align": "center",
+        "wrap": true
+      },
+      {
+        "type": "text",
+        "text": "はじめての人や聞き専も大歓迎！！",
+        "size": "xs",
+        "color": "#535353",
+        "align": "center",
+        "wrap": true
+      },
+      {
+        "type": "box",
+        "layout": "vertical",
+        "justifyContent": "center",
+        "cornerRadius": "md",
+        "margin": "sm",
+        "background": {
+          "type": "linearGradient",
+          "angle": "135deg",
+          "startColor": "#f87515",
+          "endColor": "#eab108"
+        },
+        "contents": [
+          {
+            "type": "button",
+            "style": "link",
+            "color": "#ffffff",
+            "action": {
+              "type": "uri",
+              "label": "発表内容を詳しくみる",
+              "uri": "https://mini-lt.lumos-ynu.jp"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
