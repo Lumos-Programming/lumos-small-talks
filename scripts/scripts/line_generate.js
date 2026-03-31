@@ -8,7 +8,7 @@ if (require.main === module) {
     const weekId = '2026-W09';
     const weekData = {
         weekString: '2026-W09',
-        eventStartTime: '21:00',
+        eventStartTime: '22:00',
         talks: [
             {
                 id: 'sample-id-1',

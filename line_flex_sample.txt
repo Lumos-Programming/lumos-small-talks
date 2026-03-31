@@ -36,7 +36,7 @@
     "contents": [
       {
         "type": "text",
-        "text": "2月23日(月) 21:00~",
+        "text": "2月23日(月) 22:00~",
         "weight": "bold",
         "size": "lg",
         "color": "#1f2937",

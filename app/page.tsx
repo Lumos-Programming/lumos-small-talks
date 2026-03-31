@@ -37,7 +37,7 @@ export default async function HomePage({
         <div className="container mx-auto px-4 max-w-5xl">
           <div className="flex flex-wrap items-center justify-center gap-2">
             <span className="text-xl font-bold bg-white/20 backdrop-blur-sm px-5 py-2 rounded-xl text-white">
-              📅 次回の予定: {nextEventDate} 21:00〜
+              📅 次回の予定: {nextEventDate} 22:00〜
             </span>
           </div>
         </div>
