@@ -4,7 +4,7 @@ exports.buildNextEventFlexMessage = buildNextEventFlexMessage;
 const utils_1 = require("@/lib/utils");
 function buildNextEventFlexMessage(weekId, weekData) {
     const dateText = (0, utils_1.formatWeekDate)(weekId);
-    const timeText = weekData.eventStartTime || '21:00';
+    const timeText = weekData.eventStartTime || '22:00';
     const talks = weekData.talks
         .sort((a, b) => a.order - b.order)
         .map((talk, i) => ({

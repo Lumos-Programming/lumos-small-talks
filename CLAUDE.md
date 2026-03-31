@@ -4,7 +4,7 @@
 
 ## プロジェクト概要
 
-Lumos Small Talks は、毎週月曜日 21:00 の Lightning Talk (LT) プログラム管理アプリケーションです。Next.js 16 で構築されています。
+Lumos Small Talks は、毎週月曜日 22:00 の Lightning Talk (LT) プログラム管理アプリケーションです。Next.js 16 で構築されています。
 
 - **フロントエンド**: React 19, Next.js App Router, TailwindCSS
 - **バックエンド**: Next.js Server Actions, Firebase Admin SDK
@@ -54,7 +54,7 @@ pnpm start          # プロダクションサーバー起動
 ```
 weeks/{weekId}
   ├─ weekString: "2026-W09"
-  ├─ eventStartTime: "21:00"
+  ├─ eventStartTime: "22:00"
   └─ talks: [
        {
          id: uuid,

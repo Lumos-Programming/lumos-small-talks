@@ -66,7 +66,7 @@ export async function getWeekData(weekId: string): Promise<SerializableWeekData>
   if (!doc.exists) {
     return {
       weekString: weekId,
-      eventStartTime: '21:00',
+      eventStartTime: '22:00',
       talks: [],
     }
   }
@@ -115,7 +115,7 @@ export async function addTalk(
       weekRef,
       {
         weekString: weekId,
-        eventStartTime: '21:00',
+        eventStartTime: '22:00',
         talks: talks,
       },
       { merge: true }
@@ -189,7 +189,7 @@ export async function saveDiscordEvent(
     } else {
       transaction.set(weekRef, {
         weekString: weekId,
-        eventStartTime: '21:00',
+        eventStartTime: '22:00',
         talks: [],
         discordEventId: eventId,
         discordEventUrl: eventUrl,

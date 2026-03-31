@@ -47,12 +47,12 @@ export async function createWeekEvent(weekId: string): Promise<void> {
   const month_val = mondayDate.getMonth()
   const day_val = mondayDate.getDate()
 
-  // Create date in UTC representing 21:00 JST (which is 12:00 UTC)
-  // JST = UTC+9, so 21:00 JST = 12:00 UTC same day
-  const startDateUTC = new Date(Date.UTC(year_val, month_val, day_val, 12, 0, 0))
+  // Create date in UTC representing 22:00 JST (which is 13:00 UTC)
+  // JST = UTC+9, so 22:00 JST = 13:00 UTC same day
+  const startDateUTC = new Date(Date.UTC(year_val, month_val, day_val, 13, 0, 0))
 
-  // End time: 22:00 JST = 13:00 UTC same day
-  const endDateUTC = new Date(Date.UTC(year_val, month_val, day_val, 13, 0, 0))
+  // End time: 23:00 JST = 14:00 UTC same day
+  const endDateUTC = new Date(Date.UTC(year_val, month_val, day_val, 14, 0, 0))
 
   const description = buildEventDescription(weekData)
 

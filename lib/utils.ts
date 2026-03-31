@@ -44,7 +44,7 @@ export type EventConfig = {
 // Event configuration - easy to modify when event schedule changes
 export const EVENT_CONFIG: EventConfig = {
   dayOfWeek: 1, // Monday
-  startHour: 21, // 21:00
+  startHour: 22, // 22:00
   endHour: 24, // 24:00 (midnight, exclusive)
 }
 

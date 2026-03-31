@@ -21,7 +21,7 @@ export type LineFlexMessage = {
 
 export function buildNextEventFlexMessage(weekId: string, weekData: Awaited<ReturnType<typeof getWeekData>>): LineFlexMessage {
   const dateText = formatWeekDate(weekId)
-  const timeText = weekData.eventStartTime || '21:00'
+  const timeText = weekData.eventStartTime || '22:00'
 
   const talks = weekData.talks
     .sort((a, b) => a.order - b.order)

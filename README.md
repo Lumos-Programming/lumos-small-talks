@@ -1,6 +1,6 @@
 # Lumos Small Talks
 
-毎週月曜日 21:00 開始の LT プログラム管理アプリ。
+毎週月曜日 22:00 開始の LT プログラム管理アプリ。
 
 ## デプロイ手順 (Google Cloud Run)
 

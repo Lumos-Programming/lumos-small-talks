@@ -598,8 +598,8 @@ describe('週次ロジックのテスト', () => {
       expect(nav.centerLabel).toBe('次回')
     })
 
-    it('月曜日21:00（イベント開始）は今回として扱う', () => {
-      const eventStart = createDateForDayAndTime(1, 21, 0) // 月曜 21:00
+    it('月曜日22:00（イベント開始）は今回として扱う', () => {
+      const eventStart = createDateForDayAndTime(1, 22, 0) // 月曜 22:00
       expect(getThisWeekEventState(eventStart)).toBe(EventState.Ongoing)
       expect(getNextEventWeekId(eventStart)).toBe(getWeekId(eventStart))
 
