@@ -219,13 +219,13 @@ describe('週次ロジックのテスト', () => {
       expect(getNextEventWeekId(beforeEvent)).toBe(currentWeek)
     })
 
-    it('イベント日より前の曜日（Upcoming）は今週を返す', () => {
+    it('イベント日より前の曜日（Upcoming）は次のイベント週を返す', () => {
       const daysBeforeEvent = getDaysUpcoming(EVENT_CONFIG.dayOfWeek)
       if (daysBeforeEvent.length === 0) return
 
       const beforeDay = createDateForDayAndTime(daysBeforeEvent[0], 15, 0)
-      const currentWeek = getWeekId(beforeDay)
-      expect(getNextEventWeekId(beforeDay)).toBe(currentWeek)
+      const expectedWeek = getWeekId(getNextEventDate(beforeDay))
+      expect(getNextEventWeekId(beforeDay)).toBe(expectedWeek)
     })
 
     it('イベント終了後は来週を返す', () => {
@@ -606,6 +606,15 @@ describe('週次ロジックのテスト', () => {
       const nav = getNavigationWeeks(eventStart)
       expect(nav.centerWeek).toBe(getWeekId(eventStart))
       expect(nav.centerLabel).toBe('今回')
+    })
+
+    it('日曜日14:00は翌週のイベント週を返す', () => {
+      const sunday = createDateForDayAndTime(0, 14, 0) // 日曜日 14:00
+      expect(getThisWeekEventState(sunday)).toBe(EventState.Upcoming)
+
+      const nextMonday = new Date(sunday)
+      nextMonday.setDate(sunday.getDate() + 1)
+      expect(getNextEventWeekId(sunday)).toBe(getWeekId(nextMonday))
     })
 
     it('火曜日0:00（イベント終了後）は次週のイベントを参照する', () => {
