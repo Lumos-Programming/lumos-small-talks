@@ -165,9 +165,9 @@ describe('週次ロジックのテスト', () => {
 
         const beforeDay = createDateForDayAndTime(daysBeforeEvent[0], 15, 0)
         const result = getNavigationWeeks(beforeDay)
-        const currentWeek = getWeekId(beforeDay)
+        const expectedCenterWeek = getWeekId(getNextEventDate(beforeDay))
 
-        expect(result.centerWeek).toBe(currentWeek)
+        expect(result.centerWeek).toBe(expectedCenterWeek)
         expect(result.centerLabel).toBe('次回')
         expect(result.rightLabel).toBe('次々回')
       })
