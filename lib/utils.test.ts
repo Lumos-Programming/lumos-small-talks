@@ -165,9 +165,9 @@ describe('週次ロジックのテスト', () => {
 
         const beforeDay = createDateForDayAndTime(daysBeforeEvent[0], 15, 0)
         const result = getNavigationWeeks(beforeDay)
-        const currentWeek = getWeekId(beforeDay)
+        const expectedCenterWeek = getWeekId(getNextEventDate(beforeDay))
 
-        expect(result.centerWeek).toBe(currentWeek)
+        expect(result.centerWeek).toBe(expectedCenterWeek)
         expect(result.centerLabel).toBe('次回')
         expect(result.rightLabel).toBe('次々回')
       })
@@ -219,13 +219,13 @@ describe('週次ロジックのテスト', () => {
       expect(getNextEventWeekId(beforeEvent)).toBe(currentWeek)
     })
 
-    it('イベント日より前の曜日（Upcoming）は今週を返す', () => {
+    it('イベント日より前の曜日（Upcoming）は次のイベント週を返す', () => {
       const daysBeforeEvent = getDaysUpcoming(EVENT_CONFIG.dayOfWeek)
       if (daysBeforeEvent.length === 0) return
 
       const beforeDay = createDateForDayAndTime(daysBeforeEvent[0], 15, 0)
-      const currentWeek = getWeekId(beforeDay)
-      expect(getNextEventWeekId(beforeDay)).toBe(currentWeek)
+      const expectedWeek = getWeekId(getNextEventDate(beforeDay))
+      expect(getNextEventWeekId(beforeDay)).toBe(expectedWeek)
     })
 
     it('イベント終了後は来週を返す', () => {
@@ -586,6 +586,135 @@ describe('週次ロジックのテスト', () => {
     })
   })
 
+  // 2026-03-30(月)〜2026-04-05(日) の実際の日付を使ったテーブルテスト
+  // ISO週: 2026-W14, イベント: 月曜22:00〜24:00
+  describe('先週(2026-W14)の実際の日付によるテーブルテスト', () => {
+    // EVENT_CONFIGが変わってもテストが壊れないよう固定値を使用
+    const config: EventConfig = {
+      dayOfWeek: 1, // 月曜日
+      startHour: 22,
+      endHour: 23,
+    }
+
+    // getWeekId: 先週の全日付が同じISO週になることを検証（configに依存しない）
+    describe('getWeekId', () => {
+      const weekIdCases = [
+        { date: '2026-03-30T12:00:00', label: '3/30(月)', expected: '2026-W14' },
+        { date: '2026-03-31T12:00:00', label: '3/31(火)', expected: '2026-W14' },
+        { date: '2026-04-01T12:00:00', label: '4/1(水)',  expected: '2026-W14' },
+        { date: '2026-04-02T12:00:00', label: '4/2(木)',  expected: '2026-W14' },
+        { date: '2026-04-03T12:00:00', label: '4/3(金)',  expected: '2026-W14' },
+        { date: '2026-04-04T12:00:00', label: '4/4(土)',  expected: '2026-W14' },
+        { date: '2026-04-05T12:00:00', label: '4/5(日)',  expected: '2026-W14' },
+      ]
+
+      it.each(weekIdCases)('$label → $expected', ({ date, expected }) => {
+        expect(getWeekId(new Date(date))).toBe(expected)
+      })
+    })
+
+    // getThisWeekEventState: 曜日・時刻ごとの状態を検証
+    describe('getThisWeekEventState', () => {
+      const stateCases = [
+        // 月曜日（イベント日）
+        { date: '2026-03-30T00:00:00', label: '3/30(月) 0:00  イベント前', expected: EventState.Upcoming },
+        { date: '2026-03-30T12:00:00', label: '3/30(月) 12:00 イベント前', expected: EventState.Upcoming },
+        { date: '2026-03-30T21:59:00', label: '3/30(月) 21:59 イベント直前', expected: EventState.Upcoming },
+        { date: '2026-03-30T22:00:00', label: '3/30(月) 22:00 イベント開始', expected: EventState.Ongoing },
+        { date: '2026-03-30T22:30:00', label: '3/30(月) 22:30 イベント中', expected: EventState.Ongoing },
+        { date: '2026-03-30T22:59:00', label: '3/30(月) 22:59 イベント終了直前', expected: EventState.Ongoing },
+        { date: '2026-03-30T23:00:00', label: '3/30(月) 23:00 イベント終了後', expected: EventState.Upcoming },
+        // 火曜〜土曜（イベント後）
+        { date: '2026-03-31T00:00:00', label: '3/31(火) 0:00  イベント翌日', expected: EventState.Past },
+        { date: '2026-03-31T12:00:00', label: '3/31(火) 12:00', expected: EventState.Past },
+        { date: '2026-04-01T12:00:00', label: '4/1(水) 12:00',  expected: EventState.Past },
+        { date: '2026-04-02T12:00:00', label: '4/2(木) 12:00',  expected: EventState.Past },
+        { date: '2026-04-03T12:00:00', label: '4/3(金) 12:00',  expected: EventState.Past },
+        { date: '2026-04-04T12:00:00', label: '4/4(土) 12:00',  expected: EventState.Past },
+        // 日曜（イベント前＝翌週への Upcoming）
+        { date: '2026-04-05T12:00:00', label: '4/5(日) 12:00 次の月曜を待つ', expected: EventState.Upcoming },
+      ]
+
+      it.each(stateCases)('$label → $expected', ({ date, expected }) => {
+        expect(getThisWeekEventState(new Date(date), config)).toBe(expected)
+      })
+    })
+
+    // getNextEventWeekId: 各日付から見た「次のイベント週」を検証
+    describe('getNextEventWeekId', () => {
+      const nextEventCases = [
+        // 月曜（イベント前・イベント中）→ 今週 W14
+        { date: '2026-03-30T12:00:00', label: '3/30(月) 12:00 イベント前', expected: '2026-W14' },
+        { date: '2026-03-30T22:30:00', label: '3/30(月) 22:30 イベント中', expected: '2026-W14' },
+        // 火曜〜土曜（Past）→ 来週 W15
+        { date: '2026-03-31T12:00:00', label: '3/31(火) イベント終了後', expected: '2026-W15' },
+        { date: '2026-04-01T12:00:00', label: '4/1(水)',  expected: '2026-W15' },
+        { date: '2026-04-02T12:00:00', label: '4/2(木)',  expected: '2026-W15' },
+        { date: '2026-04-03T12:00:00', label: '4/3(金)',  expected: '2026-W15' },
+        { date: '2026-04-04T12:00:00', label: '4/4(土)',  expected: '2026-W15' },
+        // 日曜（Upcoming）→ 翌日の月曜 W15
+        { date: '2026-04-05T12:00:00', label: '4/5(日) 翌月曜を待つ', expected: '2026-W15' },
+      ]
+
+      it.each(nextEventCases)('$label → $expected', ({ date, expected }) => {
+        expect(getNextEventWeekId(new Date(date), config)).toBe(expected)
+      })
+    })
+
+    // getNavigationWeeks: 各状態でのナビゲーションラベルを検証
+    describe('getNavigationWeeks', () => {
+      const navCases = [
+        // Upcoming（月曜イベント前）: center=次回(W14)
+        {
+          date: '2026-03-30T12:00:00',
+          label: '3/30(月) 12:00 イベント前',
+          prevWeek: '2026-W13', centerWeek: '2026-W14', nextWeek: '2026-W15',
+          centerLabel: '次回' as const, rightLabel: '次々回' as const,
+        },
+        // Ongoing（月曜イベント中）: center=今回(W14)
+        {
+          date: '2026-03-30T22:30:00',
+          label: '3/30(月) 22:30 イベント中',
+          prevWeek: '2026-W13', centerWeek: '2026-W14', nextWeek: '2026-W15',
+          centerLabel: '今回' as const, rightLabel: '次回' as const,
+        },
+        // Past（火曜）: center=次回(W15)
+        {
+          date: '2026-03-31T12:00:00',
+          label: '3/31(火) イベント終了後',
+          prevWeek: '2026-W14', centerWeek: '2026-W15', nextWeek: '2026-W16',
+          centerLabel: '次回' as const, rightLabel: '次々回' as const,
+        },
+        // Past（金曜）: center=次回(W15)
+        {
+          date: '2026-04-03T12:00:00',
+          label: '4/3(金) 週後半',
+          prevWeek: '2026-W14', centerWeek: '2026-W15', nextWeek: '2026-W16',
+          centerLabel: '次回' as const, rightLabel: '次々回' as const,
+        },
+        // Upcoming（日曜）: center=次回(W15)
+        {
+          date: '2026-04-05T12:00:00',
+          label: '4/5(日) 翌月曜を待つ',
+          prevWeek: '2026-W14', centerWeek: '2026-W15', nextWeek: '2026-W16',
+          centerLabel: '次回' as const, rightLabel: '次々回' as const,
+        },
+      ]
+
+      it.each(navCases)(
+        '$label → center=$centerWeek($centerLabel)',
+        ({ date, prevWeek, centerWeek, nextWeek, centerLabel, rightLabel }) => {
+          const result = getNavigationWeeks(new Date(date), config)
+          expect(result.prevWeek).toBe(prevWeek)
+          expect(result.centerWeek).toBe(centerWeek)
+          expect(result.nextWeek).toBe(nextWeek)
+          expect(result.centerLabel).toBe(centerLabel)
+          expect(result.rightLabel).toBe(rightLabel)
+        }
+      )
+    })
+  })
+
   describe('バグ修正: イベント開始前の週扱い', () => {
     it('月曜日20:59（イベント開始前）は今週のイベントとして扱う', () => {
       // 旧実装ではイベント開始前が「次週」扱いされていたバグの修正を検証
@@ -606,6 +735,15 @@ describe('週次ロジックのテスト', () => {
       const nav = getNavigationWeeks(eventStart)
       expect(nav.centerWeek).toBe(getWeekId(eventStart))
       expect(nav.centerLabel).toBe('今回')
+    })
+
+    it('日曜日14:00は翌週のイベント週を返す', () => {
+      const sunday = createDateForDayAndTime(0, 14, 0) // 日曜日 14:00
+      expect(getThisWeekEventState(sunday)).toBe(EventState.Upcoming)
+
+      const nextMonday = new Date(sunday)
+      nextMonday.setDate(sunday.getDate() + 1)
+      expect(getNextEventWeekId(sunday)).toBe(getWeekId(nextMonday))
     })
 
     it('火曜日0:00（イベント終了後）は次週のイベントを参照する', () => {

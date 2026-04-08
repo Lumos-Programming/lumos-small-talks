@@ -80,14 +80,18 @@ export function getNavigationWeeks(
   const eventState = getThisWeekEventState(now, config)
 
   switch (eventState) {
-    case EventState.Upcoming:
+    case EventState.Upcoming: {
+      // Use getNextEventDate to get correct week ID for next event
+      const nextEventDate = getNextEventDate(now, config)
+      const centerWeek = getWeekId(nextEventDate)
       return {
-        prevWeek: getRelativeWeekId(-1, now),
-        centerWeek: getRelativeWeekId(0, now),
-        nextWeek: getRelativeWeekId(1, now),
+        prevWeek: getRelativeWeekId(-1, nextEventDate),
+        centerWeek,
+        nextWeek: getRelativeWeekId(1, nextEventDate),
         centerLabel: '次回',
         rightLabel: '次々回',
       }
+    }
     case EventState.Ongoing:
       return {
         prevWeek: getRelativeWeekId(-1, now),
@@ -96,14 +100,18 @@ export function getNavigationWeeks(
         centerLabel: '今回',
         rightLabel: '次回',
       }
-    case EventState.Past:
+    case EventState.Past: {
+      // Use getNextEventDate to get correct week ID for next event
+      const nextEventDate = getNextEventDate(now, config)
+      const centerWeek = getWeekId(nextEventDate)
       return {
-        prevWeek: getRelativeWeekId(0, now),
-        centerWeek: getRelativeWeekId(1, now),
-        nextWeek: getRelativeWeekId(2, now),
+        prevWeek: getRelativeWeekId(-1, nextEventDate),
+        centerWeek,
+        nextWeek: getRelativeWeekId(1, nextEventDate),
         centerLabel: '次回',
         rightLabel: '次々回',
       }
+    }
   }
 }
 
@@ -115,11 +123,15 @@ export function getNextEventWeekId(
   const eventState = getThisWeekEventState(now, config)
   switch (eventState) {
     case EventState.Upcoming:
-      return getWeekId(now)
+      // Use getNextEventDate to calculate correct week ID from actual event date
+      const nextEventDate = getNextEventDate(now, config)
+      return getWeekId(nextEventDate)
     case EventState.Ongoing:
       return getWeekId(now)
     case EventState.Past:
-      return getRelativeWeekId(1, now)
+      // Use getNextEventDate to calculate correct week ID from actual next event date
+      const nextEventDateFromPast = getNextEventDate(now, config)
+      return getWeekId(nextEventDateFromPast)
   }
 }
 
